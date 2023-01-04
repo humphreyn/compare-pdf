@@ -8,8 +8,10 @@ Standalone node module that compares pdfs
 
 To use GraphicsMagick (gm) Engine, install the following system dependencies
 
+On MS Windows, please use the 32bit version of GhostScript
+
 -   [GraphicsMagick](http://www.graphicsmagick.org/README.html)
--   [ImageMagick >=7](https://imagemagick.org/script/download.php)
+-   [ImageMagick](https://imagemagick.org/script/download.php)
 -   [GhostScript](https://www.ghostscript.com/download.html)
 
 ```

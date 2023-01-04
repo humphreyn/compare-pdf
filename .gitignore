@@ -62,6 +62,3 @@ typings/
 package-lock.json
 **/*.png
 .git
-
-# Husky
-.husky/_
