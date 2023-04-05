@@ -1,20 +1,45 @@
 {
-	"plugins": ["prettier"],
-	"extends": ["plugin:prettier/recommended"],
+	"plugins": ["json", "mocha", "prettier"],
+	"extends": [
+		"plugin:json/recommended",
+		"plugin:mocha/recommended",
+		"eslint:recommended",
+		"plugin:prettier/recommended"
+	],
 	"env": {
 		"node": true,
 		"es6": true,
 		"browser": true
 	},
-	"ignorePatterns": ["examples/cypress/cypress/support/index.js"],
 	"rules": {
+		"comma-dangle": ["error", "never"],
 		"no-unused-vars": "off",
-		"semi": "error",
 		"no-console": "off",
+		"prettier/prettier": [
+			"error",
+			{},
+			{
+				"usePrettierrc": true
+			}
+		],
 		"quote-props": ["error", "always"],
-		"prettier/prettier": "error"
+		"semi": "error"
 	},
 	"parserOptions": {
 		"ecmaVersion": 2021
-	}
+	},
+	"overrides": [
+		{
+			"files": ["**/*.md"],
+			"plugins": ["markdown"],
+			"extends": ["eslint:recommended", "plugin:markdown/recommended"],
+			"processor": "markdown/markdown"
+		},
+		{
+			"files": ["**/*.ts", "**/*.tsx"],
+			"plugins": ["@typescript-eslint"],
+			"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+			"parser": "@typescript-eslint/parser"
+		}
+	]
 }

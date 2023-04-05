@@ -1,23 +1,23 @@
-const fs = require('fs-extra');
-const path = require('path');
-const utils = require('./utils');
-const compareData = require('./compareData');
-const compareImages = require('./compareImages');
+const fs = require("fs-extra");
+const path = require("path");
+const utils = require("./utils");
+const compareData = require("./compareData");
+const compareImages = require("./compareImages");
 
 class ComparePdf {
-	constructor(config = utils.copyJsonObject(require('./config'))) {
+	constructor(config = utils.copyJsonObject(require("./config"))) {
 		this.config = config;
 		utils.ensurePathsExist(this.config);
 
 		this.opts = {
-			'masks': [],
-			'crops': [],
-			'onlyPageIndexes': [],
-			'skipPageIndexes': []
+			"masks": [],
+			"crops": [],
+			"onlyPageIndexes": [],
+			"skipPageIndexes": []
 		};
 
 		this.result = {
-			'status': 'not executed'
+			"status": "not executed"
 		};
 	}
 
@@ -29,9 +29,8 @@ class ComparePdf {
 			}
 		} else {
 			this.result = {
-				'status': 'failed',
-				'message':
-					'Baseline pdf buffer is invalid or filename is missing. Please define correctly then try again.'
+				"status": "failed",
+				"message": "Baseline pdf buffer is invalid or filename is missing. Please define correctly then try again."
 			};
 		}
 		return this;
@@ -42,30 +41,18 @@ class ComparePdf {
 			const baselinePdfBaseName = path.parse(baselinePdf).name;
 			if (fs.existsSync(baselinePdf)) {
 				this.baselinePdf = baselinePdf;
-			} else if (
-				fs.existsSync(
-					path.resolve(
-						this.config.paths.baselinePdfRootFolder,
-						`${baselinePdfBaseName}.pdf`
-					)
-				)
-			) {
-				this.baselinePdf = path.resolve(
-					this.config.paths.baselinePdfRootFolder,
-					`${baselinePdfBaseName}.pdf`
-				);
+			} else if (fs.existsSync(path.resolve(this.config.paths.baselinePdfRootFolder, `${baselinePdfBaseName}.pdf`))) {
+				this.baselinePdf = path.resolve(this.config.paths.baselinePdfRootFolder, `${baselinePdfBaseName}.pdf`);
 			} else {
 				this.result = {
-					'status': 'failed',
-					'message':
-						'Baseline pdf file path does not exists. Please define correctly then try again.'
+					"status": "failed",
+					"message": "Baseline pdf file path does not exists. Please define correctly then try again."
 				};
 			}
 		} else {
 			this.result = {
-				'status': 'failed',
-				'message':
-					'Baseline pdf file path was not set. Please define correctly then try again.'
+				"status": "failed",
+				"message": "Baseline pdf file path was not set. Please define correctly then try again."
 			};
 		}
 		return this;
@@ -79,9 +66,8 @@ class ComparePdf {
 			}
 		} else {
 			this.result = {
-				'status': 'failed',
-				'message':
-					'Actual pdf buffer is invalid or filename is missing. Please define correctly then try again.'
+				"status": "failed",
+				"message": "Actual pdf buffer is invalid or filename is missing. Please define correctly then try again."
 			};
 		}
 		return this;
@@ -92,44 +78,28 @@ class ComparePdf {
 			const actualPdfBaseName = path.parse(actualPdf).name;
 			if (fs.existsSync(actualPdf)) {
 				this.actualPdf = actualPdf;
-			} else if (
-				fs.existsSync(
-					path.resolve(
-						this.config.paths.actualPdfRootFolder,
-						`${actualPdfBaseName}.pdf`
-					)
-				)
-			) {
-				this.actualPdf = path.resolve(
-					this.config.paths.actualPdfRootFolder,
-					`${actualPdfBaseName}.pdf`
-				);
+			} else if (fs.existsSync(path.resolve(this.config.paths.actualPdfRootFolder, `${actualPdfBaseName}.pdf`))) {
+				this.actualPdf = path.resolve(this.config.paths.actualPdfRootFolder, `${actualPdfBaseName}.pdf`);
 			} else {
 				this.result = {
-					'status': 'failed',
-					'message':
-						'Actual pdf file path does not exists. Please define correctly then try again.'
+					"status": "failed",
+					"message": "Actual pdf file path does not exists. Please define correctly then try again."
 				};
 			}
 		} else {
 			this.result = {
-				'status': 'failed',
-				'message':
-					'Actual pdf file path was not set. Please define correctly then try again.'
+				"status": "failed",
+				"message": "Actual pdf file path was not set. Please define correctly then try again."
 			};
 		}
 		return this;
 	}
 
-	addMask(
-		pageIndex,
-		coordinates = { 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 0 },
-		color = 'black'
-	) {
+	addMask(pageIndex, coordinates = { "x0": 0, "y0": 0, "x1": 0, "y1": 0 }, color = "black") {
 		this.opts.masks.push({
-			'pageIndex': pageIndex,
-			'coordinates': coordinates,
-			'color': color
+			"pageIndex": pageIndex,
+			"coordinates": coordinates,
+			"color": color
 		});
 		return this;
 	}
@@ -149,13 +119,10 @@ class ComparePdf {
 		return this;
 	}
 
-	cropPage(
-		pageIndex,
-		coordinates = { 'width': 0, 'height': 0, 'x': 0, 'y': 0 }
-	) {
+	cropPage(pageIndex, coordinates = { "width": 0, "height": 0, "x": 0, "y": 0 }) {
 		this.opts.crops.push({
-			'pageIndex': pageIndex,
-			'coordinates': coordinates
+			"pageIndex": pageIndex,
+			"coordinates": coordinates
 		});
 		return this;
 	}
@@ -165,28 +132,23 @@ class ComparePdf {
 		return this;
 	}
 
-	async compare(comparisonType = 'byImage') {
-		if (
-			this.result.status === 'not executed' ||
-			this.result.status !== 'failed'
-		) {
+	async compare(comparisonType = "byImage") {
+		if (this.result.status === "not executed" || this.result.status !== "failed") {
 			const compareDetails = {
-				'actualPdfFilename': this.actualPdf,
-				'baselinePdfFilename': this.baselinePdf,
-				'actualPdfBuffer': this.actualPdfBufferData
-					? this.actualPdfBufferData
-					: fs.readFileSync(this.actualPdf), //, { encoding: "base64" }
-				'baselinePdfBuffer': this.baselinePdfBufferData
+				"actualPdfFilename": this.actualPdf,
+				"baselinePdfFilename": this.baselinePdf,
+				"actualPdfBuffer": this.actualPdfBufferData ? this.actualPdfBufferData : fs.readFileSync(this.actualPdf), //, { encoding: "base64" }
+				"baselinePdfBuffer": this.baselinePdfBufferData
 					? this.baselinePdfBufferData
 					: fs.readFileSync(this.baselinePdf),
-				'config': this.config,
-				'opts': this.opts
+				"config": this.config,
+				"opts": this.opts
 			};
 			switch (comparisonType) {
-				case 'byBase64':
+				case "byBase64":
 					this.result = await compareData.comparePdfByBase64(compareDetails);
 					break;
-				case 'byImage':
+				case "byImage":
 				default:
 					this.result = await compareImages.comparePdfByImage(compareDetails);
 					break;

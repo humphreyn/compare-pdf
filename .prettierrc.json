@@ -1,16 +1,18 @@
 {
 	"arrowParens": "always",
 	"bracketSpacing": true,
+	"printWidth": 120,
 	"quoteProps": "preserve",
 	"semi": true,
-	"singleQuote": true,
+	"singleQuote": false,
 	"tabWidth": 2,
 	"trailingComma": "none",
 	"useTabs": true,
+	"xmlWhitespaceSensitivity": "strict",
 	"overrides": [
 		{
-			"files": "*.json",
-			"options": { "parser": "json" }
+			"files": "*.md",
+			"parser": "markdown"
 		}
 	]
 }

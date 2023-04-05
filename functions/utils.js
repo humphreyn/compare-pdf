@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require("fs-extra");
 
 const copyJsonObject = (jsonObject) => {
 	return JSON.parse(JSON.stringify(jsonObject));
