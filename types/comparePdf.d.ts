@@ -61,10 +61,10 @@ export interface Details {
     diffPng: string;
 }
 
-interface Results {
+export interface Results {
     status: string;
     message: string;
-    details?: Details;
+    details?: Details[];
 }
 
 declare class ComparePdf {
