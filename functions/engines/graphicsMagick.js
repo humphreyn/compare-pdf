@@ -1,5 +1,5 @@
 const path = require("path");
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+const pdfjsLib = require("pdfjs-dist/build/pdf");
 
 /**
  *

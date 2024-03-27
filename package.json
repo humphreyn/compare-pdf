@@ -25,19 +25,19 @@
 		"test pdf"
 	],
 	"devDependencies": {
-		"@types/chai": "^4.3.4",
-		"@types/mocha": "^10.0.1",
-		"@types/node": "^18.11.18",
-		"chai": "^4.3.7",
-		"mocha": "^10.2.0",
-		"ts-node": "^10.9.1"
+		"@types/chai": "^4.3.14",
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^20.11.30",
+		"chai": "^4.4.1",
+		"mocha": "^10.4.0",
+		"ts-node": "^10.9.2"
 	},
 	"dependencies": {
 		"canvas": "^2.11.2",
-		"fs-extra": "^11.1.0",
+		"fs-extra": "^11.2.0",
 		"gm": "^1.25.0",
 		"lodash": "^4.17.21",
-		"pdfjs-dist": "3.4.120",
+		"pdfjs-dist": "3.8.162",
 		"pixelmatch": "^5.3.0",
 		"pngjs": "^7.0.0"
 	}
