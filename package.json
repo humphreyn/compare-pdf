@@ -1,14 +1,13 @@
 {
 	"name": "compare-pdf",
-	"version": "1.1.8",
+	"version": "2.0.0",
 	"description": "Standalone node module that compares pdfs",
 	"type": "module",
-	"exports": "./functions/comparePdf.js",
+	"exports": "./functions/ComparePdf.js",
 	"types": "./types/comparePdf.d.ts",
 	"scripts": {
 		"mocha": "node ./node_modules/mocha/bin/mocha",
-		"test": "mocha --recursive --timeout 600000",
-		"test-ts": "env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha --recursive --timeout 600000 --require ts-node/register 'test/**/*.ts'",
+		"test": "mocha --recursive --timeout 10000",
 		"lint": "eslint . --fix",
 		"pretty": "prettier --write .",
 		"prepare": "husky"
@@ -26,9 +25,6 @@
 		"@eslint/js": "^9.10.0",
 		"@prettier/plugin-xml": "^3.4.1",
 		"@stylistic/eslint-plugin": "^2.8.0",
-		"@types/chai": "^4.3.19",
-		"@types/lodash": "^4.17.7",
-		"@types/mocha": "^10.0.7",
 		"chai": "^5.1.1",
 		"chai-json": "^1.0.0",
 		"deep-equal-in-any-order": "^2.0.6",
@@ -44,7 +40,6 @@
 		"mocha": "^10.7.3",
 		"nock": "^13.5.5",
 		"prettier": "^3.3.3",
-		"ts-node": "^10.9.2",
 		"typescript": "^5.6.2",
 		"typescript-eslint": "^8.5.0",
 		"yaml-eslint-parser": "^1.2.3"

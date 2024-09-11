@@ -20,8 +20,7 @@ const config = [
 			"**/*.pdf",
 			"**/*.MP4",
 			"**/*.png",
-			"**/README.md",
-			"**/test/comparePdfTests.ts"
+			"**/README.md"
 		]
 	},
 	{

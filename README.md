@@ -4,6 +4,12 @@
 
 Standalone node module that compares pdfs
 
+From version 2.0.0 this package is now pure ESM. It cannot be require()'d from CommonJS.
+
+You also need to make sure you're on the latest minor version of Node.js. At minimum Node.js 16.
+
+I would strongly recommend moving to ESM. ESM can still import CommonJS packages, but CommonJS packages cannot import ESM packages synchronously.
+
 ## Setup
 
 To use GraphicsMagick (gm) Engine, install the following system dependencies
@@ -78,14 +84,19 @@ const config = {
 By default, pdfs are compared using the comparison type as "byImage"
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs", async () => {
-	const comparisonResults = await new comparePdf().actualPdfFile("same.pdf").baselinePdfFile("baseline.pdf").compare();
+	const comparisonResults = await new ComparePdf().actualPdfFile("same.pdf").baselinePdfFile("baseline.pdf").compare();
 	expect(comparisonResults.status).to.equal("passed");
 });
 
 it("Should be able to verify different PDFs", async () => {
-	const ComparePdf = new comparePdf();
-	const comparisonResults = await ComparePdf.actualPdfFile("notSame.pdf")
+	const comparePdf = new ComparePdf();
+	const comparisonResults = await comparePdf
+		.actualPdfFile("notSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.compare("byImage");
 	expect(comparisonResults.status).to.equal("failed");
@@ -99,8 +110,12 @@ it("Should be able to verify different PDFs", async () => {
 You can mask areas of the images that has dynamic values (ie. Dates, or Ids) before the comparison. Just use the addMask method and indicate the pageIndex (starts at 0) and the coordinates.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs with Masks", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("maskedSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.addMask(1, { "x0": 35, "y0": 70, "x1": 145, "y1": 95 })
@@ -113,13 +128,18 @@ it("Should be able to verify same PDFs with Masks", async () => {
 You can also indicate the page masks in bulk by passing an array of it in the addMasks method
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify different PDFs with Masks", async () => {
-	const ComparePdf = new comparePdf();
+	const comparePdf = new ComparePdf();
 	const masks = [
 		{ "pageIndex": 1, "coordinates": { "x0": 35, "y0": 70, "x1": 145, "y1": 95 } },
 		{ "pageIndex": 1, "coordinates": { "x0": 185, "y0": 70, "x1": 285, "y1": 95 } }
 	];
-	const comparisonResults = await ComparePdf.actualPdfFile("maskedNotSame.pdf")
+	const comparisonResults = await comparePdf
+		.actualPdfFile("maskedNotSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.addMasks(masks)
 		.compare();
@@ -134,8 +154,12 @@ it("Should be able to verify different PDFs with Masks", async () => {
 If you need to compare only a certain area of the pdf, you can do so by utilising the cropPage method and passing the pageIndex (starts at 0), the width and height along with the x and y coordinates.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs with Croppings", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("same.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.cropPage(1, { "width": 530, "height": 210, "x": 0, "y": 415 })
@@ -147,6 +171,10 @@ it("Should be able to verify same PDFs with Croppings", async () => {
 Similar to masks, you can also pass all cropping in bulk into the cropPages method. You can have multiple croppings in the same page.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs with Croppings", async () => {
 	const croppings = [
 		{ "pageIndex": 0, "coordinates": { "width": 210, "height": 180, "x": 615, "y": 265 } },
@@ -154,7 +182,7 @@ it("Should be able to verify same PDFs with Croppings", async () => {
 		{ "pageIndex": 1, "coordinates": { "width": 530, "height": 210, "x": 0, "y": 415 } }
 	];
 
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("same.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.cropPages(croppings)
@@ -168,8 +196,12 @@ it("Should be able to verify same PDFs with Croppings", async () => {
 Should you need to test only specific page indexes in a pdf, you can do so by specifying an array of page indexes using the onlyPageIndexes method as shown below.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify only specific page indexes", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("notSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.onlyPageIndexes([1])
@@ -183,8 +215,12 @@ it("Should be able to verify only specific page indexes", async () => {
 On the flip side, should you need to skip specific page indexes in a pdf, you can do so by specifying an array of page indexes using the skipPageIndexes method as shown below.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to skip specific page indexes", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("notSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.skipPageIndexes([0])
@@ -198,13 +234,18 @@ it("Should be able to skip specific page indexes", async () => {
 Starting from v1.1.6, we now support passing buffers instead of the filepath. This is very useful for situations where Pdfs comes from an API call.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+import fs from "fs";
+
 it("Should be able to verify same PDFs using direct buffer", async () => {
 	const actualPdfFilename = "same.pdf";
 	const baselinePdfFilename = "baseline.pdf";
 	const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
 	const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
 
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 		.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 		.compare();
@@ -217,7 +258,7 @@ it("Should be able to verify same PDFs using direct buffer passing filename in a
 	const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
 	const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
 
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfBuffer(actualPdfBuffer)
 		.actualPdfFile(actualPdfFilename)
 		.baselinePdfBuffer(baselinePdfBuffer)
@@ -234,8 +275,12 @@ it("Should be able to verify same PDFs using direct buffer passing filename in a
 By passing "byBase64" as the comparison type parameter in the compare method, the pdfs will be compared whether the actual and baseline's converted file in base64 format are the same.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("same.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.compare("byBase64");
@@ -243,7 +288,7 @@ it("Should be able to verify same PDFs", async () => {
 });
 
 it("Should be able to verify different PDFs", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("notSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.compare("byBase64");
@@ -255,13 +300,18 @@ it("Should be able to verify different PDFs", async () => {
 You can also directly pass buffers instead of filepaths
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+import fs from "fs";
+
 it("Should be able to verify same PDFs using direct buffer", async () => {
 	const actualPdfFilename = "same.pdf";
 	const baselinePdfFilename = "baseline.pdf";
 	const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
 	const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
 
-	const comparisonResults = await new comparePdf(config)
+	const comparisonResults = await new ComparePdf(config)
 		.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 		.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 		.compare("byBase64");
@@ -276,6 +326,10 @@ it("Should be able to verify same PDFs using direct buffer", async () => {
 Users can override the default configuration by passing their custom config when initialising the class
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to override default configs", async () => {
 	const config = {
 		"paths": {
@@ -294,7 +348,7 @@ it("Should be able to override default configs", async () => {
 			"matchPageCount": true
 		}
 	};
-	const comparisonResults = await new comparePdf(config)
+	const comparisonResults = await new ComparePdf(config)
 		.actualPdfFile("newSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.compare();
@@ -302,8 +356,8 @@ it("Should be able to override default configs", async () => {
 });
 
 it("Should be able to override specific config property", async () => {
-	const ComparePdf = new comparePdf();
-	ComparePdf.config.paths.actualPdfRootFolder = process.cwd() + "/data/newActualPdfs";
+	const comparePdf = new ComparePdf();
+	comparePdf.config.paths.actualPdfRootFolder = process.cwd() + "/data/newActualPdfs";
 	const comparisonResults = await ComparePdf.actualPdfFile("newSame.pdf").baselinePdfFile("baseline.pdf").compare();
 	expect(comparisonResults.status).to.equal("passed");
 });
@@ -314,13 +368,17 @@ it("Should be able to override specific config property", async () => {
 Users can pass just the filename with or without extension as long as the pdfs are inside the default or custom configured actual and baseline paths
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to pass just the name of the pdf with extension", async () => {
-	const comparisonResults = await new comparePdf().actualPdfFile("same.pdf").baselinePdfFile("baseline.pdf").compare();
+	const comparisonResults = await new ComparePdf().actualPdfFile("same.pdf").baselinePdfFile("baseline.pdf").compare();
 	expect(comparisonResults.status).to.equal("passed");
 });
 
 it("Should be able to pass just the name of the pdf without extension", async () => {
-	const comparisonResults = await new comparePdf().actualPdfFile("same").baselinePdfFile("baseline").compare();
+	const comparisonResults = await new ComparePdf().actualPdfFile("same").baselinePdfFile("baseline").compare();
 	expect(comparisonResults.status).to.equal("passed");
 });
 ```
@@ -328,8 +386,12 @@ it("Should be able to pass just the name of the pdf without extension", async ()
 Users can also pass a relative path of the pdf files as parameters
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify same PDFs using relative paths", async () => {
-	const comparisonResults = await new comparePdf()
+	const comparisonResults = await new ComparePdf()
 		.actualPdfFile("../data/actualPdfs/same.pdf")
 		.baselinePdfFile("../data/baselinePdfs/baseline.pdf")
 		.compare();
@@ -344,8 +406,12 @@ it("Should be able to verify same PDFs using relative paths", async () => {
 To speed up your test executions, you can utilise the comparison type "byBase64" first and only when it fails you comapre it "byImage". This provides the best of both worlds where you get the speed of execution and when there is a difference, you can check the image diff.
 
 ```js
+import ComparePdf from "ComparePdf";
+import { expect } from "chai";
+import { it } from "mocha";
+
 it("Should be able to verify PDFs byBase64 and when it fails then byImage", async () => {
-	const comparisonResultsByBase64 = await new comparePdf()
+	const comparisonResultsByBase64 = await new ComparePdf()
 		.actualPdfFile("notSame.pdf")
 		.baselinePdfFile("baseline.pdf")
 		.compare("byBase64");
@@ -355,7 +421,7 @@ it("Should be able to verify PDFs byBase64 and when it fails then byImage", asyn
 	);
 
 	if (comparisonResultsByBase64.status === "failed") {
-		const comparisonResultsByImage = await new comparePdf()
+		const comparisonResultsByImage = await new ComparePdf()
 			.actualPdfFile("notSame.pdf")
 			.baselinePdfFile("baseline.pdf")
 			.compare("byImage");
