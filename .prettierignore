@@ -1,0 +1,10 @@
+# Project
+.editorconfig
+.eslintcache
+.husky/
+.idea/
+node_modules/
+package-lock.json
+**/*.pdf
+"**/*.MP4",
+"**/*.png"

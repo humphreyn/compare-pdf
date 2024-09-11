@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+import fs from "fs-extra";
 
 const copyJsonObject = (jsonObject) => {
 	return JSON.parse(JSON.stringify(jsonObject));
@@ -14,7 +14,7 @@ const ensurePathsExist = (config) => {
 	fs.ensureDirSync(config.paths.baselinePdfRootFolder);
 };
 
-module.exports = {
+export default {
 	copyJsonObject,
 	ensureAndCleanupPath,
 	ensurePathsExist
