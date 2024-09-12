@@ -21,14 +21,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install homebrew
+    - run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    - name: Install prerequisites
+    - run: brew install graphicsmagick
+    - run: brew install imagemagick
+    - run: brew install ghostscript
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: brew install graphicsmagick
-    - run: brew install imagemagick
-    - run: brew install ghostscript
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
