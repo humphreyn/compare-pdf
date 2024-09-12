@@ -1,7 +1,7 @@
+import Canvas from "canvas";
+import fs from "fs-extra";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import NodeCanvasFactory from "./NodeCanvasFactory.js";
-import fs from "fs-extra";
-import Canvas from "canvas";
 
 const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;

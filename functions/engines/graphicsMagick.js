@@ -1,8 +1,7 @@
-import path from "path";
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as path from "node:path";
+import { getDocument } from "pdfjs-dist";
 
 import gm from "gm";
-// import { subClass as imageMagick } from "gm";
 
 /**
  *

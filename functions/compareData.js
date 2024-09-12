@@ -1,4 +1,4 @@
-import path from "path";
+import * as path from "node:path";
 
 const comparePdfByBase64 = (compareDetails) => {
 	const actualPdfFilename = compareDetails.actualPdfFilename;

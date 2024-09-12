@@ -1,4 +1,4 @@
-const config = {
+export default {
 	"paths": {
 		"actualPdfRootFolder": process.cwd() + "/data/actualPdfs",
 		"baselinePdfRootFolder": process.cwd() + "/data/baselinePdfs",
@@ -18,5 +18,3 @@ const config = {
 		"verbosity": 0
 	}
 };
-
-export default config;

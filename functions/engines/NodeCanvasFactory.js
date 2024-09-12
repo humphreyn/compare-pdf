@@ -1,5 +1,5 @@
 import Canvas from "canvas";
-import { strict as assert } from "assert";
+import { strict as assert } from "node:assert";
 
 class NodeCanvasFactory {
 	constructor() {}

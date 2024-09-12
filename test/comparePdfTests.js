@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "fs-extra";
 import { expect } from "chai";
 import { describe, it, before, beforeEach } from "mocha";
 import ComparePdf from "../functions/ComparePdf.js";

@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import path from "path";
+import * as path from "node:path";
 import utils from "./utils.js";
 import compareData from "./compareData.js";
 import compareImages from "./compareImages.js";

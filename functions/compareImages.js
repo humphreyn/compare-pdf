@@ -1,6 +1,6 @@
 import _ from "lodash";
 import fs from "fs-extra";
-import path from "path";
+import * as path from "node:path";
 import { PNG } from "pngjs";
 import pixelMatch from "pixelmatch";
 import utils from "./utils.js";
