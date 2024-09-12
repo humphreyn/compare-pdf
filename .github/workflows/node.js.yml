@@ -34,10 +34,10 @@ jobs:
     - name: Install graphicsmagick
       run: brew install graphicsmagick
 
-    - name: Insatll imagemagick
+    - name: Install imagemagick
       run: brew install imagemagick
 
-    - name: Insatll ghostscript
+    - name: Install ghostscript
       run: brew install ghostscript
 
     - run: npm ci
