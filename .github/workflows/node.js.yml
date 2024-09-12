@@ -26,10 +26,20 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    - run: brew install graphicsmagick
-    - run: brew install imagemagick
-    - run: brew install ghostscript
+
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    
+    - name: Install graphicsmagick
+      run: brew install graphicsmagick
+
+    - name: Insatll imagemagick
+      run: brew install imagemagick
+
+    - name: Insatll ghostscript
+      run: brew install ghostscript
+
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
