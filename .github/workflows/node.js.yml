@@ -26,6 +26,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: brew install graphicsmagick
+    - run: brew install imagemagick
+    - run: brew install ghostscript
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
