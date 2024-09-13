@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { getDocument } from "pdfjs-dist";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 
 import gm from "gm";
 
