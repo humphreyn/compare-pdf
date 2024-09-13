@@ -29,7 +29,7 @@ export default function (engine = "graphicsMagick") {
 				if (Object.prototype.hasOwnProperty.call(config.settings, "password")) {
 					console.log("Password protected PDF");
 					imageEngine(pdfBuffer, pdfFilename)
-						.command("convert")
+						.command(engine === "graphicsMagick" ? "convert" : "")
 						.in("-authenticate", config.settings.password)
 						.out(multiPage ? "+adjoin" : "-adjoin")
 						.density(config.settings.density, config.settings.density)
@@ -45,7 +45,7 @@ export default function (engine = "graphicsMagick") {
 						});
 				} else {
 					imageEngine(pdfBuffer, pdfFilename)
-						.command("convert")
+						.command(engine === "graphicsMagick" ? "convert" : "")
 						.out(multiPage ? "+adjoin" : "-adjoin")
 						.density(config.settings.density, config.settings.density)
 						.quality(config.settings.quality)
@@ -61,7 +61,7 @@ export default function (engine = "graphicsMagick") {
 	module.applyMask = (pngFilePath, coordinates = { "x0": 0, "y0": 0, "x1": 0, "y1": 0 }, color = "black") => {
 		return new Promise((resolve, reject) => {
 			imageEngine(pngFilePath)
-				.command("convert")
+				.command(engine === "graphicsMagick" ? "convert" : "")
 				.drawRectangle(coordinates.x0, coordinates.y0, coordinates.x1, coordinates.y1)
 				.fill(color)
 				.write(pngFilePath, (err) => {
@@ -73,7 +73,7 @@ export default function (engine = "graphicsMagick") {
 	module.applyCrop = (pngFilePath, coordinates = { "width": 0, "height": 0, "x": 0, "y": 0 }, index = 0) => {
 		return new Promise((resolve, reject) => {
 			imageEngine(pngFilePath)
-				.command("convert")
+				.command(engine === "graphicsMagick" ? "convert" : "")
 				.crop(coordinates.width, coordinates.height, coordinates.x, coordinates.y)
 				.write(pngFilePath.replace(".png", `-${index}.png`), (err) => {
 					err ? reject(err) : resolve();
