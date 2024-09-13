@@ -44,7 +44,7 @@ jobs:
     - run: sudo apt-get update
 
     - name: Install graphicsmagick
-      run: sudo apt-get install graphicsmagick
+      run: sudo apt-get install graphicsmagick@l.4
 
     - name: Install imagemagick
       run: sudo apt-get install imagemagick@1.4+really1.3.38-1ubuntu0.1
