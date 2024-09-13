@@ -47,10 +47,10 @@ jobs:
       run: sudo apt-get install graphicsmagick
 
     - name: Install imagemagick
-      run: sudo apt-get install imagemagick
+      run: sudo apt-get install imagemagick@1.4+really1.3.38-1ubuntu0.1
     
     - name: Change ImageMagick policy to allow pdf->png conversion.
-      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-7.1.1-38/policy.xml
+      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-1.4+really1.3.38-1ubuntu0.1/policy.xml
 
     - run: npm ci
     - run: npm run build --if-present
