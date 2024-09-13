@@ -9,7 +9,7 @@ import gm from "gm";
  * @returns {{}}
  */
 export default function (engine = "graphicsMagick") {
-	const imageEngine = engine === "imageMagick" ? gm.subClass({ "imageMagick": "7+" }) : gm;
+	const imageEngine = engine === "imageMagick" ? new gm.subClass({ "imageMagick": "7+" }) : gm;
 
 	const module = {};
 
