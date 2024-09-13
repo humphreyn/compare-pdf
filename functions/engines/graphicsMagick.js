@@ -27,6 +27,7 @@ export default function (engine = "graphicsMagick") {
 				const pngFile = path.resolve(pngFileObj.dir, pngFileObj.name + pngExtension);
 
 				if (Object.prototype.hasOwnProperty.call(config.settings, "password")) {
+					console.log("Password protected PDF");
 					imageEngine(pdfBuffer, pdfFilename)
 						.command("convert")
 						.in("-authenticate", config.settings.password)
@@ -34,7 +35,12 @@ export default function (engine = "graphicsMagick") {
 						.density(config.settings.density, config.settings.density)
 						.quality(config.settings.quality)
 						.write(pngFile, (err) => {
-							if (err) return reject(err);
+							if (err) {
+								console.log("Password protected error:....................");
+								console.log(err);
+								console.log(".............................................");
+								return reject(err);
+							}
 							return resolve();
 						});
 				} else {
