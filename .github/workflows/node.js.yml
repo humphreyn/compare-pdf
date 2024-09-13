@@ -32,8 +32,8 @@ jobs:
       id: set-up-homebrew
       uses: Homebrew/actions/setup-homebrew@master
     
-    - name: Install ghostscript
-      run: brew install ghostscript
+    # - name: Install ghostscript
+      # run: brew install ghostscript
 
     - name: Install graphicsmagick
       run: brew install graphicsmagick
