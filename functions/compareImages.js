@@ -171,7 +171,7 @@ const comparePdfByImage = async (compareDetails) => {
 	} catch (error) {
 		return Promise.resolve({
 			"status": "failed",
-			"message": `An error occurred.\n${error}`
+			"message": error
 		});
 	}
 };

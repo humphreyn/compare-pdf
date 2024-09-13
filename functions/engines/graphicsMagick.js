@@ -45,6 +45,7 @@ export default function (engine = "graphicsMagick") {
 						});
 				} else {
 					imageEngine(pdfBuffer, pdfFilename)
+						.command("")
 						.command(engine === "graphicsMagick" ? "convert" : "")
 						.out(multiPage ? "+adjoin" : "-adjoin")
 						.density(config.settings.density, config.settings.density)
