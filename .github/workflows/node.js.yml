@@ -44,13 +44,13 @@ jobs:
     - run: sudo apt-get update
 
     - name: Install graphicsmagick
-      run: sudo apt-get install graphicsmagick@l.4
+      run: sudo apt-get install graphicsmagick
 
     - name: Install imagemagick
-      run: sudo apt-get install imagemagick@1.4
+      run: sudo apt-get install imagemagick
     
-    - name: Change ImageMagick policy to allow pdf->png conversion.
-      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-1.4/policy.xml
+    # - name: Change ImageMagick policy to allow pdf->png conversion.
+    #   run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-1.4/policy.xml
 
     - run: npm ci
     - run: npm run build --if-present
