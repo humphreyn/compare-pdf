@@ -28,21 +28,27 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Set up Homebrew
-      id: set-up-homebrew
-      uses: Homebrew/actions/setup-homebrew@master
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes ghostscript imagemagick graphicsmagick
+        sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
+
+    # - name: Set up Homebrew
+    #   id: set-up-homebrew
+    #   uses: Homebrew/actions/setup-homebrew@master
     
     # - name: Install ghostscript
       # run: brew install ghostscript
 
-    - name: Change ImageMagick policy to allow pdf->png conversion.
-      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-6/policy.xml
+    # - name: Change ImageMagick policy to allow pdf->png conversion.
+    #   run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-6/policy.xml
 
-    - name: Install graphicsmagick
-      run: brew install graphicsmagick
+    # - name: Install graphicsmagick
+    #   run: brew install graphicsmagick
 
-    - name: Install imagemagick
-      run: brew install imagemagick
+    # - name: Install imagemagick
+    #   run: brew install imagemagick
 
     # - run: sudo apt-get update
 
@@ -52,9 +58,9 @@ jobs:
     # - name: Install imagemagick
     #   run: sudo apt-get install imagemagick
 
-    - name: LS
-      run: ls /etc
-           ls /usr/local
+    # - name: LS
+    #   run: ls /etc
+    #        ls /usr/local
 
     - run: npm ci
     - run: npm run build --if-present
