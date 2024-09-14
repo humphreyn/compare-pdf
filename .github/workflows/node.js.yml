@@ -54,6 +54,7 @@ jobs:
 
     - name: LS
       run: ls /etc
+           ls /usr/local
 
     - run: npm ci
     - run: npm run build --if-present
