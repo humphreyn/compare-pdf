@@ -53,7 +53,7 @@ jobs:
       run: ls /etc
 
     - name: Change ImageMagick policy to allow pdf->png conversion.
-      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/imageMagick-8:6.9.11.60+dfsg-1.3ubuntu0.22.04.5/policy.xml
+      run: sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-6/policy.xml
 
     - run: npm ci
     - run: npm run build --if-present
