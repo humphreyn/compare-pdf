@@ -52,6 +52,6 @@
 		"pngjs": "^7.0.0"
 	},
 	"lint-staged": {
-		"**/*": ["eslint --cache --fix", "prettier --write --ignore-unknown"]
+		"**/*": ["eslint --cache --fix", "prettier --cache --write --ignore-unknown"]
 	}
 }
