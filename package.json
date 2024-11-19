@@ -48,7 +48,7 @@
 		"fs-extra": "^11.2.0",
 		"gm": "^1.25.0",
 		"lodash": "^4.17.21",
-		"pdfjs-dist": "^4.8.69",
+		"pdfjs-dist": "4.7.76",
 		"pixelmatch": "^6.0.0",
 		"pngjs": "^7.0.0"
 	},
