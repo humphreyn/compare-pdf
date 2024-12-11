@@ -34,10 +34,10 @@ jobs:
           sudo apt update
           sudo apt install wget curl libpng-dev build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev clean autoremove
           sudo apt install --yes ghostscript imagemagick graphicsmagick
-          wget https://download.imagemagick.org/ImageMagick/download/${{imageMagicVersion}}.tar.gz
-          tar xzf ${{imageMagicVersion}}.tar.gz
-          rm ${{imageMagicVersion}}.gz
-          sh ./${{imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && make -j && make install && ldconfig /usr/local/lib/
+          wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
+          tar xzf ${{env.imageMagicVersion}}.tar.gz
+          rm ${{env.imageMagicVersion}}.gz
+          sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && make -j && make install && ldconfig /usr/local/lib/
 
       #          sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
       #      - run: |
