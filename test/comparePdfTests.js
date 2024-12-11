@@ -1,3 +1,4 @@
+import * as util from "node:util";
 import fs from "fs-extra";
 import { expect } from "chai";
 import { describe, it, before, beforeEach } from "mocha";
@@ -111,8 +112,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("singlePage.pdf")
 					.baselinePdfFile("singlePage.pdf")
 					.compare();
-				console.log(comparisonResults);
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same multi-page PDFs", async () => {
@@ -120,7 +120,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("same.pdf")
 					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same password protected multi-page PDFs ", async () => {
@@ -130,7 +130,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("same-passwordProtected.pdf")
 					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same password restricted to prevent printing, copying, modifying multi-page PDFs ", async () => {
@@ -140,7 +140,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("same-passwordRestricted.pdf")
 					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same PDFs without extension", async () => {
@@ -148,7 +148,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("same")
 					.baselinePdfFile("baseline")
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same PDFs using relative paths", async () => {
@@ -156,7 +156,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("../data/actualPdfs/same.pdf")
 					.baselinePdfFile("../data/baselinePdfs/baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify different PDFs", async () => {
@@ -164,7 +164,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("notSame.pdf")
 					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("failed");
+				expect(comparisonResults.status).to.equal("failed", "Actual response:\n" + util.inspect(comparisonResults));
 				expect(comparisonResults.message).to.equal(
 					"notSame.pdf is not the same as baseline.pdf compared by their images."
 				);
@@ -176,7 +176,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("singlePageForIssue27.pdf")
 					.baselinePdfFile("multiPageForIssue27.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal("failed");
+				expect(comparisonResults.status).to.equal("failed", "Actual response:\n" + util.inspect(comparisonResults));
 				expect(comparisonResults.message).to.equal("Actual pdf page count (1) is not the same as Baseline pdf (2).");
 			});
 
@@ -190,7 +190,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 					.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same PDFs using direct buffer passing filename in another way", async () => {
@@ -205,7 +205,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfBuffer(baselinePdfBuffer)
 					.baselinePdfFile(baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify different PDFs using direct buffer", async () => {
@@ -218,7 +218,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 					.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal("failed");
+				expect(comparisonResults.status).to.equal("failed", "Actual response:\n" + util.inspect(comparisonResults));
 				expect(comparisonResults.message).to.equal(
 					"notSame.pdf is not the same as baseline.pdf compared by their images."
 				);
@@ -231,7 +231,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("baseline.pdf")
 					.cropPage(1, { "width": 530, "height": 210, "x": 0, "y": 415 })
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same PDFs with Multiple Croppings", async () => {
@@ -246,7 +246,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("baseline.pdf")
 					.cropPages(croppings)
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify same PDFs with Masks", async () => {
@@ -256,7 +256,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.addMask(1, { "x0": 20, "y0": 40, "x1": 100, "y1": 70 })
 					.addMask(1, { "x0": 330, "y0": 40, "x1": 410, "y1": 70 })
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify different PDFs with Masks", async () => {
@@ -269,7 +269,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("maskBaseline.pdf")
 					.addMasks(masks)
 					.compare();
-				expect(comparisonResults.status).to.equal("failed");
+				expect(comparisonResults.status).to.equal("failed", "Actual response:\n" + util.inspect(comparisonResults));
 				expect(comparisonResults.message).to.equal(
 					"maskedNotSame.pdf is not the same as maskBaseline.pdf compared by their images."
 				);
@@ -282,7 +282,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("baseline.pdf")
 					.onlyPageIndexes([1])
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to verify only specific page indexes with pdfs having different page count", async () => {
@@ -292,7 +292,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("notSamePageCount.pdf")
 					.onlyPageIndexes([0])
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 
 			it("Should be able to skip specific page indexes", async () => {
@@ -301,7 +301,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.baselinePdfFile("baseline.pdf")
 					.skipPageIndexes([0])
 					.compare();
-				expect(comparisonResults.status).to.equal("passed");
+				expect(comparisonResults.status).to.equal("passed", "Actual response:\n" + util.inspect(comparisonResults));
 			});
 		});
 	}
