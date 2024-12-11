@@ -36,7 +36,7 @@ jobs:
       #          ln -s /usr/bin/gm /usr/local/bin/convert
       #          ln -s /usr/bin/gm /usr/local/bin/magick
 
-      - run: magick -version
+      - run: convert -version
       - run: gm -version
       - run: gs -h
       - run: npm install node-pre-gyp -g
