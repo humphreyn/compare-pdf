@@ -17,7 +17,7 @@
 		"url": "git+https://github.com/marcdacz/compare-pdf.git"
 	},
 	"engines": {
-		"node": ">=20"
+		"node": "^18.18.0 || ^20.9.0 || >=21.1.0"
 	},
 	"homepage": "https://github.com/marcdacz/compare-pdf#readme",
 	"keywords": ["pdf", "graphicsMagick", "imageMagick", "compare pdf", "test pdf"],
