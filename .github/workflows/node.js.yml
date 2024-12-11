@@ -32,5 +32,6 @@ jobs:
           sudo apt-get install --yes ghostscript imagemagick graphicsmagick
           sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
 
+      - run: npm pkg delete scripts.prepare
       - run: npm install
       - run: npm test
