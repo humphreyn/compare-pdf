@@ -35,7 +35,7 @@ jobs:
 
       - run: npm install node-pre-gyp -g
       - run: npm pkg delete scripts.prepare
-      - run: npm install --save-dev mocha
-      - run: npm install --save-dev chai
-      - run: npm install --save-dev nock
+      - run: npm install --save mocha
+      - run: npm install --save chai
+      - run: npm install --save nock
       - run: npm install-ci-test --omit=dev --no-audit
