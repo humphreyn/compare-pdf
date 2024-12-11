@@ -34,7 +34,8 @@ jobs:
           sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
 
       - run: npm install node-pre-gyp -g
-      - run: npm install --save-dev chai
-      - run: npm install --save-dev nock
+      - run: npm install mocha -g
+      - run: npm install chai -g
+      - run: npm install nock -g
       - run: npm pkg delete scripts.prepare
       - run: npm install-ci-test --omit=dev --no-audit
