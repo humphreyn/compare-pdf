@@ -38,7 +38,10 @@ jobs:
           sudo wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
           sudo tar xzf ${{env.imageMagicVersion}}.tar.gz
           sudo rm ${{env.imageMagicVersion}}.tar.gz
-          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && make -j4 && make install && ldconfig /usr/local/lib
+          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
+          sudo make -j4
+          sudo make install
+          sudo ldconfig /usr/local/lib
 
       - run: convert -version
       - run: gm -version
