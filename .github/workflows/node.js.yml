@@ -31,9 +31,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install wget curl libpng-dev build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev clean autoremove
-          sudo apt install --yes ghostscript imagemagick graphicsmagick
+          sudo apt-get update
+          sudo apt-get install wget curl libpng-dev build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev clean autoremove
+          sudo apt-get install --yes ghostscript imagemagick graphicsmagick
           wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
           tar xzf ${{env.imageMagicVersion}}.tar.gz
           rm ${{env.imageMagicVersion}}.gz
