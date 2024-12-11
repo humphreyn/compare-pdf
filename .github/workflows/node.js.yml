@@ -31,13 +31,12 @@ jobs:
           sudo apt update
           sudo apt install build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
           sudo apt install --yes ghostscript imagemagick graphicsmagick
-          sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
-
-      - run: magick --version
+      #          sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
       - run: |
           ln -s /usr/bin/gm /usr/local/bin/convert
           ln -s /usr/bin/gm /usr/local/bin/magick
 
+      - run: magick --version
       - run: npm install node-pre-gyp -g
       - run: npm pkg delete scripts.prepare
       - run: npm install --no-audit
