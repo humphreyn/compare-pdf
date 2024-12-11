@@ -111,6 +111,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.actualPdfFile("singlePage.pdf")
 					.baselinePdfFile("singlePage.pdf")
 					.compare();
+				console.log(comparisonResults);
 				expect(comparisonResults.status).to.equal("passed");
 			});
 
