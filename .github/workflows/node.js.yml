@@ -33,9 +33,9 @@ jobs:
           sudo apt-get install --yes ghostscript imagemagick ffmpeg graphicsmagick
           sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
 
-      #      - run: |
-      #          ln -s /usr/bin/gm /usr/local/bin/convert
-      #          ln -s /usr/bin/gm /usr/local/bin/magick
+      - run: |
+          ln -s /usr/bin/gm /usr/local/bin/convert
+          ln -s /usr/bin/gm /usr/local/bin/magick
 
       - run: npm install node-pre-gyp -g
       - run: npm pkg delete scripts.prepare
