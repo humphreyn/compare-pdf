@@ -31,15 +31,27 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install wget curl libpng-dev build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+          sudo apt update
+          sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev make gcc wget curl
           sudo apt-get install --yes ghostscript graphicsmagick
-          sudo wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
-          sudo tar xzf ${{env.imageMagicVersion}}.tar.gz
-          sudo rm ${{env.imageMagicVersion}}.tar.gz
-          sudo apt-get clean
-          sudo apt-get autoremove
-          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && make -j && make install && ldconfig /usr/local/lib/
+          apt install libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
+          wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
+          tar xzf ${{env.imageMagicVersion}}.tar.gz
+          rm ${{env.imageMagicVersion}}.tar.gz
+          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
+          sudo make -j4
+          sudo make install
+          sudo ldconfig /usr/local/lib
+
+      #          sudo apt-get update
+      #          sudo apt-get install wget curl libpng-dev build-essential automake libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      #          sudo apt-get install --yes ghostscript graphicsmagick
+      #          sudo wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
+      #          sudo tar xzf ${{env.imageMagicVersion}}.tar.gz
+      #          sudo rm ${{env.imageMagicVersion}}.tar.gz
+      #          sudo apt-get clean
+      #          sudo apt-get autoremove
+      #          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && make -j && make install && ldconfig /usr/local/lib/
 
       #          sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
       #      - run: |
