@@ -7,7 +7,7 @@
 	"types": "./types/comparePdf.d.ts",
 	"scripts": {
 		"mocha": "node ./node_modules/mocha/bin/mocha",
-		"test": "mocha --recursive --timeout 10000",
+		"test": "mocha --recursive --timeout 20000",
 		"lint": "eslint . --fix",
 		"pretty": "prettier --write .",
 		"prepare": "husky"
@@ -17,14 +17,14 @@
 		"url": "git+https://github.com/marcdacz/compare-pdf.git"
 	},
 	"engines": {
-		"node": ">=16"
+		"node": "^18.18.0 || ^20.9.0 || >=21.1.0"
 	},
 	"homepage": "https://github.com/marcdacz/compare-pdf#readme",
 	"keywords": ["pdf", "graphicsMagick", "imageMagick", "compare pdf", "test pdf"],
 	"devDependencies": {
 		"@eslint/js": "^9.16.0",
 		"@prettier/plugin-xml": "^3.4.1",
-		"@stylistic/eslint-plugin": "^2.12.0",
+		"@stylistic/eslint-plugin": "^2.12.1",
 		"chai": "^5.1.2",
 		"eslint": "^9.16.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -33,7 +33,7 @@
 		"eslint-plugin-prettier": "^5.2.1",
 		"globals": "^15.13.0",
 		"husky": "^9.1.7",
-		"lint-staged": "^15.2.10",
+		"lint-staged": "^15.2.11",
 		"mocha": "^11.0.1",
 		"nock": "^13.5.6",
 		"prettier": "^3.4.2",
@@ -49,6 +49,9 @@
 		"pdfjs-dist": "4.7.76",
 		"pixelmatch": "^6.0.0",
 		"pngjs": "^7.0.0"
+	},
+	"overrides": {
+		"cross-spawn": "^7.0.6"
 	},
 	"lint-staged": {
 		"**/*": ["eslint --cache --fix", "prettier --cache --write --ignore-unknown"]

@@ -5,17 +5,20 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
   pull_request:
-    branches: ["main"]
+    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      imageMagicVersion: "ImageMagick-7.1.1-41"
+
     strategy:
       matrix:
-        node-version: [16.*, 17.*, 18.*, 19.*, 20.11.x, 21.x, 22.x]
+        node-version: [18.18.x, 20.9.x, 21.1.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,10 +31,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes ghostscript imagemagick graphicsmagick
-          sudo sed -i 's#<policy domain="coder" rights="none" pattern="PDF" />#<policy domain="coder" rights="read|write" pattern="PDF" />#' /etc/ImageMagick-6/policy.xml
+          sudo apt update
+          sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev make gcc wget curl
+          sudo apt-get install --yes ghostscript graphicsmagick
+          sudo apt install libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
+          sudo wget https://download.imagemagick.org/ImageMagick/download/${{env.imageMagicVersion}}.tar.gz
+          sudo tar xzf ${{env.imageMagicVersion}}.tar.gz
+          sudo rm ${{env.imageMagicVersion}}.tar.gz
+          sudo sh ./${{env.imageMagicVersion}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
+          sudo make -j4
+          sudo make install
+          sudo ldconfig /usr/local/lib
 
+      - run: convert -version
+      - run: gm -version
+      - run: gs -h
+      - run: npm install node-pre-gyp -g
       - run: npm pkg delete scripts.prepare
-      - run: npm ci
-      - run: npm test
+      - run: npm install --no-audit
+      - run: npm run test
