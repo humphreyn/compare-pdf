@@ -50,7 +50,9 @@ const config = [
 			"no-unused-vars": [
 				"error",
 				{
-					caughtErrors: "none"
+					caughtErrors: "none",
+					argsIgnorePattern: "ignore",
+					caughtErrorsIgnorePattern: "ignore"
 				}
 			],
 			"prefer-const": [
