@@ -26,10 +26,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: NPM Audit ${{ env.NODE_VERSION }}
+      - name: NPM Audit ${{ vars.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ vars.NODE_VERSION }}
       - uses: oke-py/npm-audit-action@3fa1b7654e7ff98cbb75c17f927c076a22991572 # v3.0.0
         with:
           audit_level: moderate
