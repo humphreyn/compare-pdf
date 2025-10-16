@@ -1,7 +1,6 @@
 import Canvas from "canvas";
 import fs from "fs-extra";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
-import NodeCanvasFactory from "./NodeCanvasFactory.js";
 
 const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
@@ -10,17 +9,15 @@ const STANDARD_FONT_DATA_URL = "../../node_modules/pdfjs-dist/standard_fonts/";
 const pdfPageToPng = async (pdfDocument, pageNumber, filename, isSinglePage = false) => {
 	const page = await pdfDocument.getPage(pageNumber);
 	const viewport = page.getViewport({ "scale": 1.38889 });
-	const canvasFactory = new NodeCanvasFactory();
+	const canvasFactory = pdfDocument.canvasFactory;
 	const canvasAndContext = canvasFactory.create(viewport.width, viewport.height);
 	const renderContext = {
 		"canvasContext": canvasAndContext.context,
-		"viewport": viewport,
-		"canvasFactory": canvasFactory
+		"viewport": viewport
 	};
-
 	await page.render(renderContext).promise;
 
-	const image = canvasAndContext.canvas.toBuffer();
+	const image = canvasAndContext.canvas.toBuffer("image/png");
 	const pngFileName = isSinglePage ? filename : filename.replace(".png", `-${pageNumber - 1}.png`);
 	fs.writeFileSync(pngFileName, image);
 };
