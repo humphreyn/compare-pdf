@@ -33,9 +33,9 @@ jobs:
           sudo apt-get install --yes ghostscript graphicsmagick
           sudo apt install libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
           sudo wget https://download.imagemagick.org/ImageMagick/download/${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo tar xzf ${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo rm ${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo sh ./${{vars.IMAGE_MAGIC_VERSION}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
+          sudo tar xzf 7.1.2-7.tar.gz
+          sudo rm 7.1.2-7.tar.gz
+          sudo sh ./ImageMagick-7.1.2-7.tar.gz/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
           sudo make -j4
           sudo make install
           sudo ldconfig /usr/local/lib
