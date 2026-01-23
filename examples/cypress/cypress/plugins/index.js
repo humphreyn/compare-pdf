@@ -11,17 +11,15 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const comparePdf = require("compare-pdf");
-module.exports = (on, config) => {
-    // `on` is used to hook into various events Cypress emits
-    // `config` is the resolved Cypress config
-    on("task", {
-        async pdfCompare({ actualPdf, baselinePdf }) {
-            let comparisonResults = await new comparePdf()
-                .actualPdfFile(actualPdf)
-                .baselinePdfFile(baselinePdf)
-                .compare();
-            return comparisonResults;
-        }
-    });
+import ComparePdf from "compare-pdf";
+const comparePdf = new ComparePdf();
+
+export default (on, config) => {
+	// `on` is used to hook into various events Cypress emits
+	// `config` is the resolved Cypress config
+	on("task", {
+		async pdfCompare({ actualPdf, baselinePdf }) {
+			return await comparePdf.init().actualPdfFile(actualPdf).baselinePdfFile(baselinePdf).compare();
+		}
+	});
 };

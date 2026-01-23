@@ -1,12 +1,15 @@
-describe("ToDo React", () => {
-    before(() => {});
+import { describe, before, it } from "mocha";
+import * as chai from "chai";
 
-    it("should show the correct page title", async () => {
-        cy.task("pdfCompare", {
-            actualPdf: "actualPdf.pdf",
-            baselinePdf: "baselinePdf.pdf"
-        }).then((result) => {
-            expect(result.status).to.equal("passed");
-        });
-    });
+describe("ToDo React", () => {
+	before(() => {});
+
+	it("should show the correct page title", async () => {
+		cy.task("pdfCompare", {
+			actualPdf: "actualPdf.pdf",
+			baselinePdf: "baselinePdf.pdf"
+		}).then((result) => {
+			chai.expect(result.status).to.equal("passed");
+		});
+	});
 });

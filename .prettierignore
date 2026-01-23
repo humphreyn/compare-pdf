@@ -1,0 +1,11 @@
+# Project
+.editorconfig
+.eslintcache
+.husky/
+.idea/
+node_modules/
+logs
+package-lock.json
+**/*.pdf
+**/*.md
+test/data/

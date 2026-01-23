@@ -59,10 +59,11 @@ typings/
 
 # next.js build output
 .next
-package-lock.json
 **/*.png
 .git
 
 # Project
 .idea/
 
+# test folders
+test/data/

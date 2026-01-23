@@ -1,418 +1,764 @@
-const fs = require('fs-extra');
-const comparePdf = require('../.');
-const chai = require('chai');
-const expect = chai.expect;
+import { describe, it } from "mocha";
+import path from "node:path";
+import * as fs from "node:fs";
+import { readFile } from "node:fs/promises";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as chai from "chai";
+import chaiFiles from "chai-files";
+import { ComparePdf, Engine, LogLevel } from "../functions/ComparePdf.js";
 
-describe('Compare Pdf Common Tests', () => {
-	it('Should be able to override default configs', async () => {
-		let config = require('./newConfig');
-		let comparisonResults = await new comparePdf(config)
-			.actualPdfFile('newSame.pdf')
-			.baselinePdfFile('baseline.pdf')
-			.compare();
-		expect(comparisonResults.status).to.equal('passed');
+const defaultConfig = {
+	paths: {
+		actualPdfRootFolder: "./data/actualPdfs",
+		actualPngRootFolder: "./data/actualPngs",
+		baselinePdfRootFolder: "./data/baselinePdfs",
+		baselinePngRootFolder: "./data/baselinePngs",
+		diffPngRootFolder: "./data/diffPngs"
+	},
+	settings: {
+		imageEngine: Engine.NATIVE,
+		density: 100,
+		quality: 70,
+		tolerance: 0,
+		threshold: 0.05,
+		cleanPngPaths: true,
+		matchPageCount: true,
+		disableFontFace: true,
+		verbosity: LogLevel.ERROR,
+		password: undefined
+	}
+};
+
+chai.use(chaiFiles);
+
+/****************************************************
+ * Retuns the number of pages in a pdf file
+ *
+ * @param {Object} options
+ * @param {string} options.url                    - The filename and path to the actual pdf
+ * @param {string} [options.password=undefined]   - optional password of the pdf
+ * @returns {Promise<number>}                     - The number of pages in the pdf
+ * @private
+ */
+function getNoOfPages({ url, password = undefined } = {}) {
+	return readFile(url)
+		.then((file) => {
+			return new Uint8Array(file.buffer);
+		})
+		.then((content) => {
+			return pdfjsLib.getDocument({ "password": password, "data": content });
+		})
+		.then((loadingTask) => {
+			return loadingTask.promise;
+		})
+		.then((document) => {
+			return document.numPages;
+		});
+}
+
+describe("Compare Pdf Common Tests", () => {
+	it("Should be able to override default configs", async () => {
+		const config = {
+			paths: {
+				actualPdfRootFolder: "./test/data/actualPdfs",
+				baselinePdfRootFolder: "./test/data/baselinePdfs",
+				actualPngRootFolder: "./test/data/actualPngs",
+				baselinePngRootFolder: "./test/data/baselinePngs",
+				diffPngRootFolder: "./test/data/diffPngs"
+			},
+			settings: {
+				imageEngine: Engine.GRAPHICS_MAGICK,
+				density: 80,
+				quality: 80,
+				tolerance: 100,
+				threshold: 0.55,
+				cleanPngPaths: false,
+				matchPageCount: false,
+				disableFontFace: false,
+				verbosity: LogLevel.INFO,
+				password: "foobar"
+			}
+		};
+		const comparePdf = new ComparePdf(config);
+
+		chai.expect(comparePdf.config).to.deep.equal(config);
 	});
 
-	it('Should be able to override specific config property', async () => {
-		const ComparePdf = new comparePdf();
-		ComparePdf.config.paths.actualPdfRootFolder = process.cwd() + '/data/newActualPdfs';
-		let comparisonResults = await ComparePdf.actualPdfFile('newSame.pdf').baselinePdfFile('baseline.pdf').compare();
-		expect(comparisonResults.status).to.equal('passed');
-	});
+	[
+		{
+			actualPdfRootFolder: "./test/data/foo/bar"
+		},
+		{
+			baselinePdfRootFolder: "./test/data/foo/bar"
+		},
+		{
+			actualPngRootFolder: "./test/data/foo/bar"
+		},
+		{
+			baselinePngRootFolder: "./test/data/foo/bar"
+		},
+		{
+			diffPngRootFolder: "./test/data/foo/bar"
+		}
+	].forEach((property) => {
+		const key = Object.keys(property)[0];
+		const value = property[key];
+		it(`Should be able to override paths ${key} config property`, async () => {
+			const config = {
+				paths: {}
+			};
+			config.paths[key] = value;
+			const expectedConfig = structuredClone(defaultConfig);
+			expectedConfig.paths[key] = value;
+			const comparePdf = new ComparePdf(config);
 
-	it('Should be able to throw error when passing invalid actual pdf file path', async () => {
-		let comparisonResults = await new comparePdf()
-			.actualPdfFile('missing.pdf')
-			.baselinePdfFile('baseline.pdf')
-			.compare();
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'Actual pdf file path does not exists. Please define correctly then try again.'
-		);
-	});
-
-	['actualPngRootFolder', 'baselinePngRootFolder', 'diffPngRootFolder'].forEach((pngFolder) => {
-		it(`Should be able to throw error when config has missing ${pngFolder}`, async () => {
-			delete require.cache[require.resolve('./config')];
-			let missingConfig = require('./config');
-			missingConfig.paths[pngFolder] = '';
-			let comparisonResults = await new comparePdf(missingConfig)
-				.actualPdfFile('same')
-				.baselinePdfFile('baseline')
-				.compare();
-
-			expect(comparisonResults.status).to.equal('failed');
-			expect(comparisonResults.message).to.equal(
-				'PNG directory is not set. Please define correctly then try again.'
-			);
+			chai.expect(comparePdf.config).to.deep.equal(expectedConfig);
 		});
 	});
 
-	it('Should be able to throw error when not passing actual pdf file path', async () => {
-		let comparisonResults = await new comparePdf().actualPdfFile('').baselinePdfFile('baseline.pdf').compare();
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'Actual pdf file path was not set. Please define correctly then try again.'
-		);
-	});
-
-	it('Should be able to throw error when passing invalid baseline pdf file path', async () => {
-		let comparisonResults = await new comparePdf()
-			.actualPdfFile('same.pdf')
-			.baselinePdfFile('missing.pdf')
-			.compare();
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'Baseline pdf file path does not exists. Please define correctly then try again.'
-		);
-	});
-
-	it('Should be able to throw error when not passing baseline pdf file path', async () => {
-		let comparisonResults = await new comparePdf().actualPdfFile('same.pdf').baselinePdfFile('').compare();
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'Baseline pdf file path was not set. Please define correctly then try again.'
-		);
-	});
-
-	it('Should be able to verify PDFs byBase64 and when it fails then byImage', async () => {
-		let comparisonResultsByBase64 = await new comparePdf()
-			.actualPdfFile('notSame.pdf')
-			.baselinePdfFile('baseline.pdf')
-			.compare('byBase64');
-		expect(comparisonResultsByBase64.status).to.equal('failed');
-		expect(comparisonResultsByBase64.message).to.equal(
-			'notSame.pdf is not the same as baseline.pdf compared by their base64 values.'
-		);
-
-		if (comparisonResultsByBase64.status === 'failed') {
-			let comparisonResultsByImage = await new comparePdf()
-				.actualPdfFile('notSame.pdf')
-				.baselinePdfFile('baseline.pdf')
-				.compare('byImage');
-			expect(comparisonResultsByImage.status).to.equal('failed');
-			expect(comparisonResultsByImage.message).to.equal(
-				'notSame.pdf is not the same as baseline.pdf compared by their images.'
-			);
-			expect(comparisonResultsByImage.details).to.not.be.null;
+	[
+		{
+			imageEngine: Engine.GRAPHICS_MAGICK
+		},
+		{
+			density: 80
+		},
+		{
+			quality: 80
+		},
+		{
+			tolerance: 100
+		},
+		{
+			threshold: 0.55
+		},
+		{
+			cleanPngPaths: false
+		},
+		{
+			matchPageCount: false
+		},
+		{
+			disableFontFace: false
+		},
+		{
+			verbosity: LogLevel.INFO
+		},
+		{
+			password: "foobar"
 		}
+	].forEach((property) => {
+		const key = Object.keys(property)[0];
+		const value = property[key];
+		it(`Should be able to override settings ${key} config property`, async () => {
+			const config = {
+				settings: {}
+			};
+			config.settings[key] = value;
+			const expectedConfig = structuredClone(defaultConfig);
+			expectedConfig.settings[key] = value;
+			const comparePdf = new ComparePdf(config);
+
+			chai.expect(comparePdf.config).to.deep.equal(expectedConfig);
+		});
+	});
+
+	["actualPdfRootFolder", "baselinePdfRootFolder"].forEach((key) => {
+		it(`Should throw error when config has emtpy ${key}`, async () => {
+			const config = {
+				paths: {}
+			};
+			config.paths[key] = "";
+			const fcn = function () {
+				new ComparePdf(config);
+			};
+
+			chai.expect(fcn).to.throw("no such file or directory, mkdir ''");
+		});
+	});
+
+	["actualPdfRootFolder", "baselinePdfRootFolder"].forEach((key) => {
+		it(`Should throw error when config ${key} is null`, async () => {
+			const config = {
+				paths: {}
+			};
+			config.paths[key] = null;
+			const fcn = function () {
+				new ComparePdf(config);
+			};
+			chai
+				.expect(fcn)
+				.to.throw('The "path" argument must be of type string or an instance of Buffer or URL. Received null');
+		});
+	});
+
+	[
+		"actualPdfRootFolder",
+		"baselinePdfRootFolder",
+		"actualPngRootFolder",
+		"baselinePngRootFolder",
+		"diffPngRootFolder"
+	].forEach((key) => {
+		it(`Should keep default ${key} value when attempting to override value with undefined`, async () => {
+			const config = {
+				paths: {}
+			};
+			config.paths[key] = undefined;
+			const comparePdf = new ComparePdf(config);
+
+			chai.expect(comparePdf.config).to.deep.equal(defaultConfig);
+		});
+	});
+
+	[
+		"imageEngine",
+		"density",
+		"quality",
+		"tolerance",
+		"threshold",
+		"cleanPngPaths",
+		"matchPageCount",
+		"disableFontFace",
+		"verbosity",
+		"password"
+	].forEach((key) => {
+		it(`Should keep default ${key} value when attempting to override value with undefined`, async () => {
+			const config = {
+				settings: {}
+			};
+			config.settings[key] = undefined;
+			const comparePdf = new ComparePdf(config);
+
+			chai.expect(comparePdf.config).to.deep.equal(defaultConfig);
+		});
+	});
+
+	["actualPdfRootFolder", "baselinePdfRootFolder"].forEach((key) => {
+		it(`Should create ${key} when it does not exist`, async () => {
+			const config = {
+				paths: {}
+			};
+			config.paths[key] = `./test/data/folders/${key}`;
+			fs.rmSync(config.paths[key], { recursive: true, force: true, maxRetries: 3 });
+			chai.expect(chaiFiles.dir(config.paths[key])).to.not.exist;
+			const comparePdf = new ComparePdf(config);
+			chai.expect(comparePdf.config.paths[key]).to.equal(config.paths[key]);
+			chai.expect(chaiFiles.dir(comparePdf.config.paths[key])).to.exist;
+		});
+	});
+
+	it("Should return failed when not passing actual pdf file name", async () => {
+		const actualFileName = "";
+		const baselineFileName = "baseline.pdf";
+		const actualFolder = "actualPdfRootFolder";
+		const baselineFolder = "baselinePdfRootFolder";
+		const comparePdf = new ComparePdf();
+		const actualFile = path.resolve(comparePdf.config.paths[actualFolder], actualFileName);
+		const baselineFile = path.resolve(comparePdf.config.paths[baselineFolder], baselineFileName);
+
+		chai.expect(chaiFiles.dir(actualFile)).to.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.exist;
+
+		const result = await comparePdf.init().actualPdfFile(actualFileName).baselinePdfFile(baselineFileName).compare();
+
+		chai.expect(result.status).to.equal("failed");
+		chai.expect(result.message).to.equal("Actual pdf is file was not set. Please define correctly then try again.");
+		chai.expect(chaiFiles.dir(actualFile)).to.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.exist;
+	});
+
+	it("Should return failed when not passing baseline pdf file name", async () => {
+		const actualFileName = "same.pdf";
+		const baselineFileName = "";
+		const actualFolder = "actualPdfRootFolder";
+		const baselineFolder = "baselinePdfRootFolder";
+		const comparePdf = new ComparePdf();
+		const actualFile = path.resolve(comparePdf.config.paths[actualFolder], actualFileName);
+		const baselineFile = path.resolve(comparePdf.config.paths[baselineFolder], baselineFileName);
+
+		chai.expect(chaiFiles.file(actualFile)).to.exist;
+		chai.expect(chaiFiles.dir(baselineFile)).to.exist;
+
+		const result = await comparePdf.init().actualPdfFile(actualFileName).baselinePdfFile(baselineFileName).compare();
+
+		chai.expect(result.status).to.equal("failed");
+		chai.expect(result.message).to.equal("Baseline pdf is file was not set. Please define correctly then try again.");
+		chai.expect(chaiFiles.file(actualFile)).to.exist;
+		chai.expect(chaiFiles.dir(baselineFile)).to.exist;
+	});
+
+	it("Should return failed when passing invalid actual pdf file name", async () => {
+		const actualFileName = "missing.pdf";
+		const baselineFileName = "baseline.pdf";
+		const actualFolder = "actualPdfRootFolder";
+		const baselineFolder = "baselinePdfRootFolder";
+		const comparePdf = new ComparePdf();
+		const actualFile = path.resolve(comparePdf.config.paths[actualFolder], actualFileName);
+		const baselineFile = path.resolve(comparePdf.config.paths[baselineFolder], baselineFileName);
+
+		chai.expect(chaiFiles.file(actualFile)).to.not.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.exist;
+
+		const result = await comparePdf.init().actualPdfFile(actualFileName).baselinePdfFile(baselineFileName).compare();
+
+		chai.expect(result.status).to.equal("failed");
+		chai
+			.expect(result.message)
+			.to.equal(`Actual pdf file: '${actualFileName}' does not exists. Please define correctly then try again.`);
+		chai.expect(chaiFiles.file(actualFile)).to.not.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.exist;
+	});
+
+	it("Should return failed when passing invalid baseline pdf file name", async () => {
+		const actualFileName = "same.pdf";
+		const baselineFileName = "missing.pdf";
+		const actualFolder = "actualPdfRootFolder";
+		const baselineFolder = "baselinePdfRootFolder";
+		const comparePdf = new ComparePdf();
+		const actualFile = path.resolve(comparePdf.config.paths[actualFolder], actualFileName);
+		const baselineFile = path.resolve(comparePdf.config.paths[baselineFolder], baselineFileName);
+
+		chai.expect(chaiFiles.file(actualFile)).to.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.not.exist;
+
+		const result = await comparePdf.init().actualPdfFile(actualFileName).baselinePdfFile(baselineFileName).compare();
+
+		chai.expect(result.status).to.equal("failed");
+		chai
+			.expect(result.message)
+			.to.equal(`Baseline pdf file: '${baselineFileName}' does not exists. Please define correctly then try again.`);
+		chai.expect(chaiFiles.file(actualFile)).to.exist;
+		chai.expect(chaiFiles.file(baselineFile)).to.not.exist;
+	});
+
+	it("Should be able to verify PDFs byBase64 and when it fails then by Image", async () => {
+		const comparePdf = new ComparePdf();
+		const actualPdfFile = "notSame.pdf";
+		const actualPdfFileName = path.parse(actualPdfFile).name;
+		const expectedFile = path.resolve(
+			comparePdf.config.paths.diffPngRootFolder,
+			actualPdfFileName,
+			`${actualPdfFileName}_diff-0.png`
+		);
+		const expected = [{ status: "failed", numDiffPixels: 515, diffPng: expectedFile }];
+
+		const byBase64Result = await comparePdf
+			.init()
+			.actualPdfFile(actualPdfFile)
+			.baselinePdfFile("baseline.pdf")
+			.compare("byBase64");
+
+		chai.expect(byBase64Result.status).to.equal("failed");
+		chai
+			.expect(byBase64Result.message)
+			.to.equal("notSame.pdf is not the same as baseline.pdf compared by their base64 values.");
+
+		const byImageResult = await comparePdf
+			.init()
+			.actualPdfFile(actualPdfFile)
+			.baselinePdfFile("baseline.pdf")
+			.compare("byImage");
+
+		chai.expect(byImageResult.status).to.equal("failed");
+		chai
+			.expect(byImageResult.message)
+			.to.equal("notSame.pdf is not the same as baseline.pdf compared by their images.");
+		chai.expect(byImageResult.details).to.be.an("array");
+		chai.expect(byImageResult.details).to.deep.equal(expected);
+		chai.expect(chaiFiles.file(expectedFile)).to.exist;
 	});
 });
 
-describe('Compare Pdf By Image Tests', () => {
-	const engines = ['native', 'graphicsMagick', 'imageMagick'];
+describe("Compare Pdf By Image Tests", () => {
+	const engines = Object.values(Engine);
 	for (const engine of engines) {
 		describe(`Engine: ${engine}`, () => {
-			let config;
+			const config = {
+				settings: {
+					imageEngine: engine
+				}
+			};
 
-			beforeEach(() => {
-				delete require.cache[require.resolve('./config')];
-				config = require('./config');
-				config.settings.imageEngine = engine;
+			it("Should be able to verify same single page PDFs", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("singlePage.pdf")
+					.baselinePdfFile("singlePage.pdf")
+					.compare();
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same single page PDFs', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('singlePage.pdf')
-					.baselinePdfFile('singlePage.pdf')
-					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+			it("Should be able to verify same multi-page PDFs", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf.init().actualPdfFile("same.pdf").baselinePdfFile("baseline.pdf").compare();
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same multi-page PDFs', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('same.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to verify same password protected multi-page PDFs ", async () => {
+				const newConfig = structuredClone(defaultConfig);
+				newConfig.settings.password = "Password";
+				const comparePdf = new ComparePdf(newConfig);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("same-passwordProtected.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same password protected multi-page PDFs ', async () => {
-				const copiedConfig = JSON.parse(JSON.stringify(config));
-				copiedConfig.settings.password = "Password";
-				let comparisonResults = await new comparePdf(copiedConfig)
-					.actualPdfFile('same-passwordProtected.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to verify same password restricted to prevent printing, copying, modifying multi-page PDFs ", async () => {
+				const newConfig = structuredClone(config);
+				newConfig.settings.password = "Password";
+				const comparePdf = new ComparePdf(newConfig);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("same-passwordRestricted.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same password restricted to prevent printing, copying, modifying multi-page PDFs ', async () => {
-				const copiedConfig = JSON.parse(JSON.stringify(config));
-				copiedConfig.settings.password = "Password";
-				let comparisonResults = await new comparePdf(copiedConfig)
-					.actualPdfFile('same-passwordRestricted.pdf')
-					.baselinePdfFile('baseline.pdf')
-					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+			it("Should be able to verify same PDFs without extension", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf.init().actualPdfFile("same").baselinePdfFile("baseline").compare();
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same PDFs without extension', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('same')
-					.baselinePdfFile('baseline')
+			it("Should be able to verify same PDFs using relative paths", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("../data/actualPdfs/same.pdf")
+					.baselinePdfFile("../data/baselinePdfs/baseline.pdf")
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same PDFs using relative paths', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('../data/actualPdfs/same.pdf')
-					.baselinePdfFile('../data/baselinePdfs/baseline.pdf')
-					.compare();
-				expect(comparisonResults.status).to.equal('passed');
-			});
-
-			it('Should be able to verify different PDFs', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('notSame.pdf')
-					.baselinePdfFile('baseline.pdf')
-					.compare();
-				expect(comparisonResults.status).to.equal('failed');
-				expect(comparisonResults.message).to.equal(
-					'notSame.pdf is not the same as baseline.pdf compared by their images.'
+			it("Should be able to verify different PDFs", async () => {
+				const comparePdf = new ComparePdf(config);
+				const actualPdfFile = "notSame.pdf";
+				const actualPdfFileName = path.parse(actualPdfFile).name;
+				const expectedFile = path.resolve(
+					comparePdf.config.paths.diffPngRootFolder,
+					actualPdfFileName,
+					`${actualPdfFileName}_diff-0.png`
 				);
-				expect(comparisonResults.details).to.not.be.null;
+				const numDiffPixels = comparePdf.config.settings.imageEngine === "native" ? 515 : 516;
+				const expected = [{ status: "failed", numDiffPixels: numDiffPixels, diffPng: expectedFile }];
+
+				const result = await comparePdf.init().actualPdfFile(actualPdfFile).baselinePdfFile("baseline.pdf").compare();
+
+				chai.expect(result.status).to.equal("failed");
+				chai.expect(result.message).to.equal("notSame.pdf is not the same as baseline.pdf compared by their images.");
+				chai.expect(result.details).to.be.an("array");
+				chai.expect(result.details).to.deep.equal(expected);
+				chai.expect(chaiFiles.file(expectedFile)).to.exist;
 			});
 
-			it('Should be able to verify different PDFs when actual is single page and baseline is multiple[Issue-27]', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('singlePageForIssue27.pdf')
-					.baselinePdfFile('multiPageForIssue27.pdf')
+			it("Should be able to verify different PDFs when actual is single page and baseline is multiple[Issue-27]", async () => {
+				const comparePdf = new ComparePdf(config);
+				const actualPdfFileName = "singlePageForIssue27.pdf";
+				const baselinePdfFileName = "multiPageForIssue27.pdf";
+				const actualPdfNoOfPages = await getNoOfPages({
+					url: path.resolve(comparePdf.config.paths.actualPdfRootFolder, actualPdfFileName)
+				});
+				const baselinePdfNoOfPages = await getNoOfPages({
+					url: path.resolve(comparePdf.config.paths.baselinePdfRootFolder, baselinePdfFileName)
+				});
+
+				chai.expect(actualPdfNoOfPages).to.equal(1, "Expected actual Pdf file to have 1 page");
+				chai.expect(baselinePdfNoOfPages).to.equal(2, "Expected base line Pdf file to have 2 pages");
+
+				const result = await comparePdf
+					.init()
+					.actualPdfFile(actualPdfFileName)
+					.baselinePdfFile(baselinePdfFileName)
 					.compare();
-				expect(comparisonResults.status).to.equal('failed');
-				expect(comparisonResults.message).to.equal(
-					'Actual pdf page count (1) is not the same as Baseline pdf (2).'
-				);
+
+				chai.expect(result.status).to.equal("failed");
+				chai
+					.expect(result.message)
+					.to.equal(
+						`Actual pdf page count (${actualPdfNoOfPages.toString()}) is not the same as Baseline pdf (${baselinePdfNoOfPages.toString()}).`
+					);
 			});
 
-			it('Should be able to verify same PDFs using direct buffer', async () => {
+			it("Should be able to verify same PDFs using direct buffer", async () => {
 				const actualPdfFilename = "same.pdf";
 				const baselinePdfFilename = "baseline.pdf";
-				const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
-				const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
-
-				let comparisonResults = await new comparePdf()
+				const comparePdf = new ComparePdf(config);
+				const actualPdfBuffer = fs.readFileSync(`${comparePdf.config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
+				const baselinePdfBuffer = fs.readFileSync(
+					`${comparePdf.config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`
+				);
+				const result = await comparePdf
+					.init()
 					.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 					.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same PDFs using direct buffer passing filename in another way', async () => {
+			it("Should be able to verify same PDFs using direct buffer passing filename in another way", async () => {
 				const actualPdfFilename = "same.pdf";
 				const baselinePdfFilename = "baseline.pdf";
-				const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
-				const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
-
-				let comparisonResults = await new comparePdf()
+				const comparePdf = new ComparePdf(config);
+				const actualPdfBuffer = fs.readFileSync(`${comparePdf.config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
+				const baselinePdfBuffer = fs.readFileSync(
+					`${comparePdf.config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`
+				);
+				const result = await comparePdf
+					.init()
 					.actualPdfBuffer(actualPdfBuffer)
 					.actualPdfFile(actualPdfFilename)
 					.baselinePdfBuffer(baselinePdfBuffer)
 					.baselinePdfFile(baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify different PDFs using direct buffer', async () => {
+			it("Should be able to verify different PDFs using direct buffer", async () => {
 				const actualPdfFilename = "notSame.pdf";
 				const baselinePdfFilename = "baseline.pdf";
-				const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
-				const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
-
-				let comparisonResults = await new comparePdf()
+				const comparePdf = new ComparePdf(config);
+				const actualPdfBuffer = fs.readFileSync(`${comparePdf.config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
+				const baselinePdfBuffer = fs.readFileSync(
+					`${comparePdf.config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`
+				);
+				const result = await comparePdf
+					.init()
 					.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 					.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
 					.compare();
-				expect(comparisonResults.status).to.equal('failed');
-				expect(comparisonResults.message).to.equal(
-					'notSame.pdf is not the same as baseline.pdf compared by their images.'
-				);
-				expect(comparisonResults.details).to.not.be.null;
+
+				chai.expect(result.status).to.equal("failed");
+				chai.expect(result.message).to.equal("notSame.pdf is not the same as baseline.pdf compared by their images.");
+				chai.expect(result.details).to.not.be.null;
 			});
 
-			it('Should be able to verify same PDFs with Croppings', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('same.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to verify same PDFs with Croppings", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("same.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.cropPage(1, { width: 530, height: 210, x: 0, y: 415 })
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same PDFs with Multiple Croppings', async () => {
-				let croppings = [
+			it("Should be able to verify same PDFs with Multiple Croppings", async () => {
+				const croppings = [
 					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 265 } },
 					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 520 } },
 					{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }
 				];
-
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('same.pdf')
-					.baselinePdfFile('baseline.pdf')
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("same.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.cropPages(croppings)
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify same PDFs with Masks', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('maskedSame.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to verify same PDFs with Masks", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("maskedSame.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 })
 					.addMask(1, { x0: 330, y0: 40, x1: 410, y1: 70 })
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify different PDFs with Masks', async () => {
-				let masks = [
+			it("Should be able to verify different PDFs with Masks", async () => {
+				const masks = [
 					{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 } },
 					{ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 } }
 				];
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('maskedNotSame.pdf')
-					.baselinePdfFile('maskBaseline.pdf')
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("maskedNotSame.pdf")
+					.baselinePdfFile("maskBaseline.pdf")
 					.addMasks(masks)
 					.compare();
-				expect(comparisonResults.status).to.equal('failed');
-				expect(comparisonResults.message).to.equal(
-					'maskedNotSame.pdf is not the same as maskBaseline.pdf compared by their images.'
-				);
-				expect(comparisonResults.details).to.not.be.null;
+
+				chai.expect(result.status).to.equal("failed");
+				chai
+					.expect(result.message)
+					.to.equal("maskedNotSame.pdf is not the same as maskBaseline.pdf compared by their images.");
+				chai.expect(result.details).to.not.be.null;
 			});
 
-			it('Should be able to verify only specific page indexes', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('notSame.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to verify only specific page indexes", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("notSame.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.onlyPageIndexes([1])
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to verify only specific page indexes with pdfs having different page count', async () => {
+			it("Should be able to verify only specific page indexes with pdfs having different page count", async () => {
 				config.settings.matchPageCount = false;
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('notSamePageCount.pdf')
-					.baselinePdfFile('notSamePageCount.pdf')
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("notSamePageCount.pdf")
+					.baselinePdfFile("notSamePageCount.pdf")
 					.onlyPageIndexes([0])
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 
-			it('Should be able to skip specific page indexes', async () => {
-				let comparisonResults = await new comparePdf(config)
-					.actualPdfFile('notSame.pdf')
-					.baselinePdfFile('baseline.pdf')
+			it("Should be able to skip specific page indexes", async () => {
+				const comparePdf = new ComparePdf(config);
+				const result = await comparePdf
+					.init()
+					.actualPdfFile("notSame.pdf")
+					.baselinePdfFile("baseline.pdf")
 					.skipPageIndexes([0])
 					.compare();
-				expect(comparisonResults.status).to.equal('passed');
+
+				chai.expect(result.status).to.equal("passed");
 			});
 		});
 	}
 });
 
-describe('Compare Pdf By Base64 Tests', () => {
-	before(() => {
-		delete require.cache[require.resolve('./config')];
-		config = require('./config');
+describe("Compare Pdf By Base64 Tests", () => {
+	it("Should be able to verify same PDFs", async () => {
+		const comparePdf = new ComparePdf();
+		const result = await comparePdf
+			.init()
+			.actualPdfFile("same.pdf")
+			.baselinePdfFile("baseline.pdf")
+			.compare("byBase64");
+
+		chai.expect(result.status).to.equal("passed");
 	});
 
-	it('Should be able to verify same PDFs', async () => {
-		let comparisonResults = await new comparePdf()
-			.actualPdfFile('same.pdf')
-			.baselinePdfFile('baseline.pdf')
-			.compare('byBase64');
-		expect(comparisonResults.status).to.equal('passed');
-	});
-
-	it('Should be able to verify same PDFs using direct buffer', async () => {
+	it("Should be able to verify same PDFs using direct buffer", async () => {
 		const actualPdfFilename = "same.pdf";
 		const baselinePdfFilename = "baseline.pdf";
-		const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
-		const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
+		const comparePdf = new ComparePdf();
+		const actualPdfBuffer = fs.readFileSync(`${comparePdf.config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
+		const baselinePdfBuffer = fs.readFileSync(
+			`${comparePdf.config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`
+		);
 
-		let comparisonResults = await new comparePdf(config)
+		const result = await comparePdf
+			.init()
 			.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 			.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
-			.compare('byBase64');
-		expect(comparisonResults.status).to.equal('passed');
+			.compare("byBase64");
+
+		chai.expect(result.status).to.equal("passed");
 	});
 
-	it('Should be able to verify different PDFs', async () => {
-		let comparisonResults = await new comparePdf()
-			.actualPdfFile('notSame.pdf')
-			.baselinePdfFile('baseline.pdf')
-			.compare('byBase64');
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'notSame.pdf is not the same as baseline.pdf compared by their base64 values.'
-		);
+	it("Should be able to verify different PDFs", async () => {
+		const comparePdf = new ComparePdf();
+		const result = await comparePdf
+			.init()
+			.actualPdfFile("notSame.pdf")
+			.baselinePdfFile("baseline.pdf")
+			.compare("byBase64");
+
+		chai.expect(result.status).to.equal("failed");
+		chai
+			.expect(result.message)
+			.to.equal("notSame.pdf is not the same as baseline.pdf compared by their base64 values.");
 	});
 
-	it('Should be able to verify different PDFs using direct buffer', async () => {
+	it("Should be able to verify different PDFs using direct buffer", async () => {
 		const actualPdfFilename = "notSame.pdf";
 		const baselinePdfFilename = "baseline.pdf";
-		const actualPdfBuffer = fs.readFileSync(`${config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
-		const baselinePdfBuffer = fs.readFileSync(`${config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`);
+		const comparePdf = new ComparePdf();
+		const actualPdfBuffer = fs.readFileSync(`${comparePdf.config.paths.actualPdfRootFolder}/${actualPdfFilename}`);
+		const baselinePdfBuffer = fs.readFileSync(
+			`${comparePdf.config.paths.baselinePdfRootFolder}/${baselinePdfFilename}`
+		);
 
-		let comparisonResults = await new comparePdf(config)
+		const result = await comparePdf
+			.init()
 			.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 			.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
-			.compare('byBase64');
-		expect(comparisonResults.status).to.equal('failed');
-		expect(comparisonResults.message).to.equal(
-			'notSame.pdf is not the same as baseline.pdf compared by their base64 values.'
-		);
+			.compare("byBase64");
+
+		chai.expect(result.status).to.equal("failed");
+		chai
+			.expect(result.message)
+			.to.equal("notSame.pdf is not the same as baseline.pdf compared by their base64 values.");
 	});
 });
 
-describe('Compare Pdf Image Opts', () => {
-	const config = require('./config');
-	let comparePdfUT;
-
-	it('Should be able to set image opts', async () => {
-		let croppings = [
+describe("Compare Pdf Image Opts", () => {
+	it("Should be able to set image opts", async () => {
+		const croppings = [
 			{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 265 } },
 			{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 520 } },
 			{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }
 		];
 
-		comparePdfUT = await new comparePdf(config)
-			.actualPdfFile('maskedSame.pdf')
-			.baselinePdfFile('baseline.pdf')
+		const comparePdf = new ComparePdf();
+		const result = await comparePdf
+			.init()
+			.actualPdfFile("maskedSame.pdf")
+			.baselinePdfFile("baseline.pdf")
 			.cropPages(croppings)
 			.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 })
 			.addMask(1, { x0: 330, y0: 40, x1: 410, y1: 70 })
 			.onlyPageIndexes([0])
 			.skipPageIndexes([1]);
-		expect(comparePdfUT.opts).to.eql({
+
+		chai.expect(result.opts).to.eql({
 			masks: [
-				{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: 'black' },
-				{ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 }, color: 'black' }
+				{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: "black" },
+				{ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 }, color: "black" }
 			],
 			crops: croppings,
 			onlyPageIndexes: [0],
 			skipPageIndexes: [1]
-		})
+		});
+		chai.expect(result.result.status).to.equal("not executed");
 	});
 
-	it('Should be able to get different set of opts', async () => {
-		comparePdfUT = await new comparePdf(config)
-			.actualPdfFile('maskedSame.pdf')
-			.baselinePdfFile('baseline.pdf')
+	it("Should be able to get different set of opts", async () => {
+		const comparePdf = new ComparePdf();
+		const result = await comparePdf
+			.init()
+			.actualPdfFile("maskedSame.pdf")
+			.baselinePdfFile("baseline.pdf")
 			.cropPage(1, { width: 530, height: 210, x: 0, y: 415 })
 			.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 });
-		expect(comparePdfUT.opts).to.eql({
-			masks: [
-				{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: 'black' },
-			],
-			crops: [
-				{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }
-			],
+
+		chai.expect(result.opts).to.eql({
+			masks: [{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: "black" }],
+			crops: [{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }],
 			onlyPageIndexes: [],
 			skipPageIndexes: []
-		})
+		});
+		chai.expect(result.result.status).to.equal("not executed");
 	});
 });
