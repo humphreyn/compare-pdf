@@ -4,7 +4,7 @@
 
 Standalone node module that compares PDFs
 
-From version 2.0.0 this package is now pure ESM. It cannot be required like below:
+From version 3.0.0 this package is now pure ESM. It cannot be required like below:
 ```javascript
 const comparePdf = require('compare-pdf');
 ```
