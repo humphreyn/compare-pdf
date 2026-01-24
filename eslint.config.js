@@ -8,19 +8,21 @@ import tseslint from "typescript-eslint";
 
 const config = [
 	{
-		"ignores": [
+		// ignores added here
+		ignores: [
 			"**/.editorconfig",
 			"**/.eslintcache",
 			"**/.husky/",
 			"**/.idea/",
 			"**/node_modules/",
+			"**/reports/",
+			"**/logs",
 			"**/package-lock.json",
 			"**/examples/",
 			"**/*.d.ts",
 			"**/*.pdf",
 			"**/*.MP4",
-			"**/*.png",
-			"**/README.md"
+			"**/*.png"
 		]
 	},
 	{

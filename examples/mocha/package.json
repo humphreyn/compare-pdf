@@ -8,8 +8,8 @@
 		"test": "mocha --recursive --timeout 600000"
 	},
 	"dependencies": {
-		"chai": "^5.1.1",
-		"compare-pdf": "^1.1.8",
-		"mocha": "^10.7.3"
+		"chai": "^6.2.2",
+		"compare-pdf": "^3.0.0",
+		"mocha": "^11.7.5"
 	}
 }

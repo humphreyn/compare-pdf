@@ -12,14 +12,14 @@
 // the project's config changing)
 
 import ComparePdf from "compare-pdf";
+const comparePdf = new ComparePdf();
 
 export default (on, config) => {
 	// `on` is used to hook into various events Cypress emits
 	// `config` is the resolved Cypress config
 	on("task", {
 		async pdfCompare({ actualPdf, baselinePdf }) {
-			const comparisonResults = await new ComparePdf().actualPdfFile(actualPdf).baselinePdfFile(baselinePdf).compare();
-			return comparisonResults;
+			return await comparePdf.init().actualPdfFile(actualPdf).baselinePdfFile(baselinePdf).compare();
 		}
 	});
 };

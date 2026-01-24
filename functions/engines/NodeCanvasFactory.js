@@ -1,4 +1,4 @@
-import Canvas from "canvas";
+import Canvas from "@napi-rs/canvas";
 import { strict as assert } from "node:assert";
 
 class NodeCanvasFactory {
@@ -9,8 +9,8 @@ class NodeCanvasFactory {
 		const canvas = Canvas.createCanvas(width, height);
 		const context = canvas.getContext("2d");
 		return {
-			"canvas": canvas,
-			"context": context
+			canvas: canvas,
+			context: context
 		};
 	}
 

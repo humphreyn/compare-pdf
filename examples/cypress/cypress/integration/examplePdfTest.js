@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { describe, it, before } from "mocha";
+import { describe, before, it } from "mocha";
+import * as chai from "chai";
 import { cy } from "cypress";
 
 describe("ToDo React", () => {
@@ -7,10 +7,10 @@ describe("ToDo React", () => {
 
 	it("should show the correct page title", async () => {
 		cy.task("pdfCompare", {
-			"actualPdf": "actualPdf.pdf",
-			"baselinePdf": "baselinePdf.pdf"
+			actualPdf: "actualPdf.pdf",
+			baselinePdf: "baselinePdf.pdf"
 		}).then((result) => {
-			expect(result.status).to.equal("passed");
+			chai.expect(result.status).to.equal("passed");
 		});
 	});
 });

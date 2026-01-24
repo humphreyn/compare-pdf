@@ -7,7 +7,7 @@
 		"test": "node_modules/.bin/cypress run"
 	},
 	"dependencies": {
-		"compare-pdf": "^1.1.8",
+		"compare-pdf": "^3.0.0",
 		"cypress": "^13.14.1"
 	}
 }

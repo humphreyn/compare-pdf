@@ -2,24 +2,37 @@ export as namespace ComparePdf;
 
 export default ComparePdf;
 
+export enum Engine {
+	IMAGE_MAGICK = "imageMagick",
+	GRAPHICS_MAGICK = "graphicsMagick",
+	NATIVE = "native"
+}
+
+export enum LogLevel {
+	ERROR = 0,
+	WARNING = 1,
+	INFO = 5
+}
+
 export interface ComparePdfConfig {
-	paths: {
-		actualPdfRootFolder: string;
-		baselinePdfRootFolder: string;
-		actualPngRootFolder: string;
-		baselinePngRootFolder: string;
-		diffPngRootFolder: string;
+	paths?: {
+		actualPdfRootFolder?: string;
+		baselinePdfRootFolder?: string;
+		actualPngRootFolder?: string;
+		baselinePngRootFolder?: string;
+		diffPngRootFolder?: string;
 	};
-	settings: {
-		imageEngine: string;
-		density: number | string;
-		quality: number | string;
-		tolerance: number | string;
-		threshold: number | string;
+	settings?: {
+		imageEngine?: Engine;
+		density?: number;
+		quality?: number;
+		tolerance?: number;
+		threshold?: number;
 		cleanPngPaths?: boolean;
 		matchPageCount?: boolean;
 		disableFontFace?: boolean;
-		verbosity?: number | string;
+		verbosity?: LogLevel;
+		password?: string;
 	};
 }
 
@@ -51,7 +64,7 @@ export interface PageMask {
 }
 
 export interface PageCrop {
-	pageIndex: number;
+	pageIndex: ComparePdfConfig;
 	coordinates: Dimension;
 }
 
@@ -70,7 +83,11 @@ export interface Results {
 declare class ComparePdf {
 	constructor(config?: ComparePdfConfig);
 
+	config: ComparePdfOpts;
+
 	opts: ComparePdfOpts;
+
+	init(): ComparePdf;
 
 	baselinePdfBuffer(baselinePdfBuffer: Uint8Array, baselinePdfFilename?: string): ComparePdf;
 

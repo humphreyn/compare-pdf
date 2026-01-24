@@ -1,22 +1,20 @@
-import ComparePdf from "compare-pdf";
-import { expect } from "chai";
 import { describe, it } from "mocha";
-import config from "../config.js";
+import ComparePdf from "compare-pdf";
+import * as chai from "chai";
+const config = require("../config");
 
 describe("Compare Pdf Tests in Mocha + Chai", () => {
 	it("Should be able to compare pdfs by image", async () => {
-		const comparisonResults = await new ComparePdf(config)
-			.actualPdfFile("actualPdf")
-			.baselinePdfFile("baselinePdf")
-			.compare();
-		expect(comparisonResults.status).to.equal("passed");
+		const comparePdf = await new ComparePdf(config);
+		const results = await comparePdf.actualPdfFile("actualPdf").baselinePdfFile("baselinePdf").compare();
+
+		chai.expect(results.status).to.equal("passed");
 	});
 
 	it("Should be able to compare pdfs by base64", async () => {
-		const comparisonResults = await new ComparePdf(config)
-			.actualPdfFile("actualPdf")
-			.baselinePdfFile("baselinePdf")
-			.compare("byBase64");
-		expect(comparisonResults.status).to.equal("passed");
+		const comparePdf = await new ComparePdf(config);
+		const results = await comparePdf.actualPdfFile("actualPdf").baselinePdfFile("baselinePdf").compare("byBase64");
+
+		chai.expect(results.status).to.equal("passed");
 	});
 });

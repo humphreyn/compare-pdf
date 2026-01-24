@@ -4,7 +4,10 @@
 .husky/
 .idea/
 node_modules/
+logs
 package-lock.json
 **/*.pdf
-"**/*.MP4",
-"**/*.png"
+**/*.md
+**/*.MP4
+**/*.png
+test/data/
