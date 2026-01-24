@@ -67,3 +67,6 @@ typings/
 
 # test folders
 test/data/
+
+# Husky
+.husky/_
