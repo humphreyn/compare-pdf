@@ -18,20 +18,11 @@ const config = [
 			"**/reports/",
 			"**/logs",
 			"**/package-lock.json",
-			"**/Jenkinsfile",
-			"**/certificates/",
-			"**/Dockerfile",
-			"**/*.css",
-			"**/*.csv",
+			"**/examples/",
 			"**/*.d.ts",
-			"**/*.feature",
 			"**/*.pdf",
-			"**/*.png",
-			"**/*.properties",
-			"**/*.sql",
-			"**/*.txt",
-			"**/*.xlsx",
-			"**/*.xml"
+			"**/*.MP4",
+			"**/*.png"
 		]
 	},
 	{

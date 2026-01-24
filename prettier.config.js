@@ -18,10 +18,6 @@ const config = {
 			options: { "parser": "jsonc" }
 		},
 		{
-			files: "*.{yml,yaml}",
-			parser: "yaml-eslint-parser"
-		},
-		{
 			files: "*.md",
 			parser: "markdown"
 		},

@@ -1,0 +1,39 @@
+name: NPM Audit
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan:
+    name: NPM Audit packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: NPM Audit ${{ vars.NODE_VERSION }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+      - uses: oke-py/npm-audit-action@3fa1b7654e7ff98cbb75c17f927c076a22991572 # v3.0.0
+        with:
+          audit_level: moderate
+          create_issues: true
+          create_pr_comments: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_assignees: oke-py
+          issue_labels: vulnerability,test
+          dedupe_issues: true
+          json_flag: true

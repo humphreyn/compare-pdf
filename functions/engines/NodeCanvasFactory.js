@@ -1,5 +1,5 @@
 import Canvas from "@napi-rs/canvas";
-import assert from "assert/strict";
+import { strict as assert } from "node:assert";
 
 class NodeCanvasFactory {
 	constructor() {}

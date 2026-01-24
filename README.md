@@ -1,17 +1,20 @@
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png" height="128">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png" height="128" alt="Adobe PDF">
 
 # compare-pdf
 
-Standalone node module that compares PDFs
+Standalone node module that compares pdfs
 
-From version 3.0.0 this package is now pure ESM. It cannot be required like below:
+From version 2.0.0 this package is now pure ESM. It cannot be required like below:
 ```javascript
 const comparePdf = require('compare-pdf');
 ```
-You must instead use the ESM import expression: 
+You must instead use the ESM import expression:
 ```javascript
 import { ComparePdf, Engine, LogLevel } from "compare-pdf";
 ```
+You also need to make sure you're on the latest minor version of Node.js. At minimum Node.js 16.
+
+I would strongly recommend moving to ESM. ESM can still import CommonJS packages, but CommonJS packages cannot import ESM packages synchronously.
 
 ## Setup
 
@@ -498,9 +501,6 @@ it("Should be able to verify same PDFs using relative paths", async () => {
 	chai.expect(results.status).to.equal("passed");
 });
 ```
-
-
-
 
 ## Tips and Tricks
 

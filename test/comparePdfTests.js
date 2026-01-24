@@ -450,8 +450,11 @@ describe("Compare Pdf By Image Tests", () => {
 					actualPdfFileName,
 					`${actualPdfFileName}_diff-0.png`
 				);
-				const numDiffPixels = comparePdf.config.settings.imageEngine === "native" ? 515 : 516;
-				const expected = [{ status: "failed", numDiffPixels: numDiffPixels, diffPng: expectedFile }];
+				const pixelDiffByEngine = {};
+				pixelDiffByEngine[Engine.GRAPHICS_MAGICK] = 516;
+				pixelDiffByEngine[Engine.NATIVE] = 515;
+				pixelDiffByEngine[Engine.IMAGE_MAGICK] = 517;
+				const expected = [{ status: "failed", numDiffPixels: pixelDiffByEngine[engine], diffPng: expectedFile }];
 
 				const result = await comparePdf.init().actualPdfFile(actualPdfFile).baselinePdfFile("baseline.pdf").compare();
 
