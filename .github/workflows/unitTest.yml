@@ -60,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm pkg delete scripts.prepare
-          npm install
+          npm ci --force
 
       - name: Test
         run: npm test
