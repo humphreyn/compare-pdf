@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node.js
+      - name: Setup Node.js ${{ vars.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ vars.NODE_VERSION }}
@@ -60,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm pkg delete scripts.prepare
-          npm ci
+          npm install
 
       - name: Test
         run: npm test
