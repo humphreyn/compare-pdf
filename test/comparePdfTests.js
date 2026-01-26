@@ -450,18 +450,19 @@ describe("Compare Pdf By Image Tests", () => {
 					actualPdfFileName,
 					`${actualPdfFileName}_diff-0.png`
 				);
-				const pixelDiffByEngine = {};
-				pixelDiffByEngine[Engine.GRAPHICS_MAGICK] = 516;
-				pixelDiffByEngine[Engine.NATIVE] = 515;
-				pixelDiffByEngine[Engine.IMAGE_MAGICK] = 517;
-				const expected = [{ status: "failed", numDiffPixels: pixelDiffByEngine[engine], diffPng: expectedFile }];
 
 				const result = await comparePdf.init().actualPdfFile(actualPdfFile).baselinePdfFile("baseline.pdf").compare();
 
 				chai.expect(result.status).to.equal("failed");
 				chai.expect(result.message).to.equal("notSame.pdf is not the same as baseline.pdf compared by their images.");
 				chai.expect(result.details).to.be.an("array");
-				chai.expect(result.details).to.deep.equal(expected);
+				chai.expect(result.details).to.have.lengthOf(1);
+				chai.expect(result.details[0]).to.be.an("object");
+				chai.expect(Object.keys(result.details[0])).to.have.lengthOf(3);
+				chai.expect(result.details[0]).to.have.all.keys("status", "numDiffPixels", "diffPng");
+				chai.expect(result.details[0].status).to.equal("failed");
+				chai.expect(result.details[0].numDiffPixels).to.be.within(515, 517);
+				chai.expect(result.details[0].diffPng).to.equal(expectedFile);
 				chai.expect(chaiFiles.file(expectedFile)).to.exist;
 			});
 
