@@ -1,7 +1,6 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Unit Test
+permissions:
+  contents: read
 
 on:
   push:
@@ -11,43 +10,57 @@ on:
 
 jobs:
   build:
+    name: Unit Test
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [22.20.0, 24.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    #    strategy:
+    #      fail-fast: false
+    #      matrix:
+    #        node-version: [22.20.0, 24.x]
+    #        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          node-version: ${{ vars.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev make gcc wget curl
-          sudo apt-get install --yes ghostscript graphicsmagick
-          sudo apt install libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
-          sudo wget https://download.imagemagick.org/ImageMagick/download/${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo tar xzf ${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo rm ${{vars.IMAGE_MAGIC_VERSION}}.tar.gz
-          sudo sh ./${{vars.IMAGE_MAGIC_VERSION}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
-          sudo make -j4
-          sudo make install
-          sudo ldconfig /usr/local/lib
-
-      - name: Install dependencies
-        run: |
-          convert -version
-          convert -version
-          gm -version
-          run: gs -h
-          npm install node-pre-gyp -g
-          npm run test
+      - name: Install NPM dependencies
+        run: npm install @mapbox/node-pre-gyp
         env:
           NODE_ENV: production
           CI: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt update -qq
+          sudo apt install -qq build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev make gcc wget curl xz-utils
+          sudo apt-get -qq install --yes ghostscript graphicsmagick
+          sudo apt install -qq libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
+          sudo wget https://imagemagick.org/archive/releases/${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
+          sudo tar xf ${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
+          sudo rm ${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
+          sudo sh ./${{vars.IMAGE_MAGIC_VERSION}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
+          sudo make -s -j4
+          sudo make -s install
+          sudo ldconfig /usr/local/lib
+
+      - name: Check dependencies
+        run: |
+          convert -version
+          gm -version
+          gs -h
+
+      - name: Install dependencies
+        run: |
+          npm pkg delete scripts.prepare
+          npm ci
+
+      - name: Test
+        run: npm test
