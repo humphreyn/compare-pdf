@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import * as chai from "chai";
 import chaiFiles from "chai-files";
-import { ComparePdf, Engine, LogLevel } from "../functions/ComparePdf.js";
+import ComparePdf, { CompareBy, ImageEngine, LogLevel } from "../functions/ComparePdf.js";
 
 const defaultConfig = {
 	paths: {
@@ -16,7 +16,7 @@ const defaultConfig = {
 		diffPngRootFolder: "./data/diffPngs"
 	},
 	settings: {
-		imageEngine: Engine.NATIVE,
+		imageEngine: ImageEngine.NATIVE,
 		density: 100,
 		quality: 70,
 		tolerance: 0,
@@ -67,7 +67,7 @@ describe("Compare Pdf Common Tests", () => {
 				diffPngRootFolder: "./test/data/diffPngs"
 			},
 			settings: {
-				imageEngine: Engine.GRAPHICS_MAGICK,
+				imageEngine: ImageEngine.GRAPHICS_MAGICK,
 				density: 80,
 				quality: 80,
 				tolerance: 100,
@@ -118,7 +118,7 @@ describe("Compare Pdf Common Tests", () => {
 
 	[
 		{
-			imageEngine: Engine.GRAPHICS_MAGICK
+			imageEngine: ImageEngine.GRAPHICS_MAGICK
 		},
 		{
 			density: 80
@@ -346,7 +346,7 @@ describe("Compare Pdf Common Tests", () => {
 			.init()
 			.actualPdfFile(actualPdfFile)
 			.baselinePdfFile("baseline.pdf")
-			.compare("byBase64");
+			.compare(CompareBy.BASE64);
 
 		chai.expect(byBase64Result.status).to.equal("failed");
 		chai
@@ -357,7 +357,7 @@ describe("Compare Pdf Common Tests", () => {
 			.init()
 			.actualPdfFile(actualPdfFile)
 			.baselinePdfFile("baseline.pdf")
-			.compare("byImage");
+			.compare(CompareBy.IMAGE);
 
 		chai.expect(byImageResult.status).to.equal("failed");
 		chai
@@ -370,7 +370,7 @@ describe("Compare Pdf Common Tests", () => {
 });
 
 describe("Compare Pdf By Image Tests", () => {
-	const engines = Object.values(Engine);
+	const engines = Object.values(ImageEngine);
 	for (const engine of engines) {
 		describe(`Engine: ${engine}`, () => {
 			const config = {
@@ -658,7 +658,7 @@ describe("Compare Pdf By Base64 Tests", () => {
 			.init()
 			.actualPdfFile("same.pdf")
 			.baselinePdfFile("baseline.pdf")
-			.compare("byBase64");
+			.compare(CompareBy.BASE64);
 
 		chai.expect(result.status).to.equal("passed");
 	});
@@ -676,7 +676,7 @@ describe("Compare Pdf By Base64 Tests", () => {
 			.init()
 			.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 			.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
-			.compare("byBase64");
+			.compare(CompareBy.BASE64);
 
 		chai.expect(result.status).to.equal("passed");
 	});
@@ -687,7 +687,7 @@ describe("Compare Pdf By Base64 Tests", () => {
 			.init()
 			.actualPdfFile("notSame.pdf")
 			.baselinePdfFile("baseline.pdf")
-			.compare("byBase64");
+			.compare(CompareBy.BASE64);
 
 		chai.expect(result.status).to.equal("failed");
 		chai
@@ -708,7 +708,7 @@ describe("Compare Pdf By Base64 Tests", () => {
 			.init()
 			.actualPdfBuffer(actualPdfBuffer, actualPdfFilename)
 			.baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename)
-			.compare("byBase64");
+			.compare(CompareBy.BASE64);
 
 		chai.expect(result.status).to.equal("failed");
 		chai
