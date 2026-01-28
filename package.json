@@ -4,7 +4,6 @@
 	"description": "Standalone node module that compares pdfs",
 	"type": "module",
 	"exports": "./functions/ComparePdf.js",
-	"types": "./types/comparePdf.d.ts",
 	"scripts": {
 		"lint": "eslint . --fix",
 		"pretty": "npx prettier --write .",
@@ -23,9 +22,9 @@
 	"homepage": "https://github.com/marcdacz/compare-pdf#readme",
 	"keywords": ["pdf", "graphicsMagick", "imageMagick", "compare pdf", "test pdf"],
 	"devDependencies": {
-		"@commitlint/cli": "^20.2.0",
-		"@commitlint/config-conventional": "^20.2.0",
-		"@commitlint/format": "^20.2.0",
+		"@commitlint/cli": "^20.3.1",
+		"@commitlint/config-conventional": "^20.3.1",
+		"@commitlint/format": "^20.3.1",
 		"@eslint/js": "^9.39.2",
 		"@prettier/plugin-xml": "^3.4.2",
 		"@stylistic/eslint-plugin": "^5.7.1",
@@ -36,13 +35,13 @@
 		"eslint-plugin-json": "^4.0.1",
 		"eslint-plugin-markdown": "^5.1.0",
 		"eslint-plugin-prettier": "^5.5.5",
-		"globals": "^17.1.0",
+		"globals": "^17.2.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
 		"mocha": "^11.7.5",
 		"prettier": "^3.8.1",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.53.1"
+		"typescript-eslint": "^8.54.0"
 	},
 	"dependencies": {
 		"@napi-rs/canvas": "^0.1.88",

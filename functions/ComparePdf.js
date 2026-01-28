@@ -5,46 +5,152 @@ import compareData from "./compareData.js";
 import compareImages from "./compareImages.js";
 
 /**
- * @typedef {( 0 | 1 | 5 )} LogLevels
- */
-
-/**
- * @typedef {( "imageMagick" | "graphicsMagick" | "native" )} Engines
- */
-
-/**
- * @enum { string }
- */
-const Engine = { IMAGE_MAGICK: "imageMagick", GRAPHICS_MAGICK: "graphicsMagick", NATIVE: "native" };
-
-/***
+ * Enum for Verbosity Levels
+ * @readonly
  * @enum { number }
  */
-const LogLevel = { "ERROR": 0, "WARNING": 1, "INFO": 5 };
+const LogLevel = Object.freeze({
+	ERROR: 0,
+	WARNING: 1,
+	INFO: 5
+});
+
+/**
+ * Enum for Verbosity Levels
+ * @readonly
+ * @enum { string }
+ */
+const ImageEngine = Object.freeze({
+	IMAGE_MAGICK: "imageMagick",
+	GRAPHICS_MAGICK: "graphicsMagick",
+	NATIVE: "native"
+});
+
+/**
+ * Enum for Image Compare Mode
+ * @readonly
+ * @enum { string }
+ */
+const CompareBy = Object.freeze({
+	BASE64: "Base64",
+	IMAGE: "Image"
+});
+
+/**
+ * @typedef {( 0 | 1 | 5 )} Verbosity
+ */
+
+/**
+ * @typedef {( "imageMagick" | "graphicsMagick" | "native" )} Engine
+ */
+
+/**
+ * @typedef {( "Base64" | "Image" )} CompareType
+ */
+
+/**
+ * @typedef {Object} Paths
+ * @property {string} [actualPdfRootFolder]
+ * @property {string} [baselinePdfRootFolder]
+ * @property {string} [actualPngRootFolder]
+ * @property {string} [baselinePngRootFolder]
+ * @property {string} [diffPngRootFolder]
+ */
+
+/**
+ * @typedef {Object} Settings
+ * @property {Engine} [imageEngine]
+ * @property {number}	[density]
+ * @property {number}	[quality]
+ * @property {number}	[tolerance]
+ * @property {number}	[threshold]
+ * @property {boolean} [cleanPngPaths]
+ * @property {boolean}	[matchPageCount]
+ * @property {boolean}	[disableFontFace]
+ * @property {Verbosity}	[verbosity]
+ * @property {string}	[password]
+ */
+
+/**
+ * @typedef {Object} ComparePdfConfig
+ * @property {Paths} [paths]
+ * @property {Settings}	[settings]
+ */
+
+/**
+ * @typedef {Object} Coordinates
+ * @property {number} x0
+ * @property {number} y0
+ * @property {number} x1
+ * @property {number} y1
+ */
+
+/**
+ * @typedef {Object} Dimension
+ * @property {number} width
+ * @property {number}	height
+ * @property {number} x
+ * @property {number}	y
+ */
+
+/**
+ * @typedef {Object} PageMask
+ * @property {number} pageIndex
+ * @property {Coordinates}	coordinates
+ * @property {string}	[color]
+ */
+
+/**
+ * @typedef {Object} PageCrop
+ * @property {number} pageIndex
+ * @property {Dimension}	coordinates
+ */
+
+/**
+ * @typedef {Object} ComparePdfOpts
+ * @property {PageMask[]} masks
+ * @property {PageCrop[]}	crops
+ * @property {Array<string | number>} onlyPageIndexes
+ * @property {Array<string | number>}	skipPageIndexes
+ */
+
+/**
+ * @typedef {Object} Details
+ * @property {string} status
+ * @property {number}	numDiffPixels
+ * @property {string}	diffPng
+ */
+
+/**
+ * @typedef {Object} Results
+ * @property {string} status
+ * @property {string}	message
+ * @property {Details[]}	[details]
+ */
 
 class ComparePdf {
 	/**************************************************
 	 * Constructure for Compare PDF class
 	 *
-	 * @param {Object} [config={}]                                                  - optional paths object with the following options:
-	 * @param {Object} [config.paths={}]                                            - optional paths object with the following options:
+	 * @param {ComparePdfConfig} [config={}]                                        - optional paths object with the following options:
+	 * @param {Paths} [config.paths={}]                                             - optional paths object with the following options:
 	 * @param {string} [config.paths.actualPdfRootFolder="./data/actualPdfs"]       - optional, root folder of Actual PDF. Default "./data/actualPdfs"
 	 * @param {string} [config.paths.actualPngRootFolder="./data/actualPngs"]       - optional, root folder of Actual png/images. Default "./data/actualPngs"
 	 * @param {string} [config.paths.baselinePdfRootFolder="./data/baselinePdfs"]   - optional, root folder of Baseline PDF. Default "./data/baselinePdfs"
 	 * @param {string} [config.paths.baselinePngRootFolder="./data/baselinePngs"]   - optional, root folder of Baseline png/images. Default "./data/baselinePngs"
 	 * @param {string} [config.paths.diffPngRootFolder="./data/diffPngs"]           - optional, root folder of Difference png/images. Default "./data/diffPngs"
-	 * @param {Object} [config.settings={}]                                         - optional, settings object with the following options:
-	 * @param {Engines} [config.settings.imageEngine=Engine.NATIVE]                 - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
+	 * @param {Settings} [config.settings={}]                                       - optional, settings object with the following options:
+	 * @param {Engine} [config.settings.imageEngine=ImageEngine.NATIVE]             - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
 	 * @param {number} [config.settings.density=100]                                - optional, (from gm) the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image. Default 100
-	 * @param {number} [config.settings.quality=70]                                 - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best), val ranges from 0 to 100 (best). Default 70
+	 * @param {number} [config.settings.quality=70]                                 - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best). Default 70
 	 * @param {number} [config.settings.tolerance=0]                                - optional, the allowable pixel count that is different between the compared images. Default 0
-	 * @param {number} [config.settings.threshold=0.05]                             - optional, from pixelmatch) ranges from 0 to 1. Smaller values make the comparison more sensitive. Default 0.05
+	 * @param {number} [config.settings.threshold=0.05]                             - optional, (from pixelmatch) ranges from 0 to 1. Smaller values make the comparison more sensitive. Default 0.05
 	 * @param {boolean} [config.settings.cleanPngPaths=true]                        - optional, boolean flag for cleaning png folders automatically. Default true
-	 * @param {boolean} [config.settings.matchPageCount=true]                       - optional, boolean flag that enables or disables the page count verification between the actual and baseline pdfs. Default true
+	 * @param {boolean} [config.settings.matchPageCount=true]                       - optional, boolean flag that enables or disables the page count verification between the actual and baseline PDFs. Default true
 	 * @param {boolean} [config.settings.disableFontFace=true]                      - optional, specifies if fonts are converted to OpenType fonts and loaded by the Font Loading API or @font-face rules.
 	 *                                                                              - If false, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands, default true
-	 * @param {LogLevels} [config.settings.verbosity=LogLevel.ERROR]                - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
-	 * @param {string} [config.settings.password=undefined]                         - optional, setting to supply a password for a password protected or restricted pdf. Default undefined
+	 * @param {Verbosity} [config.settings.verbosity=LogLevel.ERROR]                - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
+	 * @param {string} [config.settings.password=undefined]                         - optional, setting to supply a password for a password protected or restricted PDF. Default undefined
 	 * @return {ComparePdf}
 	 */
 	constructor({
@@ -56,7 +162,7 @@ class ComparePdf {
 			diffPngRootFolder = "./data/diffPngs"
 		} = {},
 		settings: {
-			imageEngine = Engine.NATIVE,
+			imageEngine = ImageEngine.NATIVE,
 			density = 100,
 			quality = 70,
 			tolerance = 0,
@@ -104,6 +210,12 @@ class ComparePdf {
 		return this;
 	}
 
+	/**************************************************
+	 * Initialisation method
+	 * Should be chained first
+	 *
+	 * @return {ComparePdf}
+	 */
 	init() {
 		this.opts = {
 			masks: [],
@@ -222,6 +334,13 @@ class ComparePdf {
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {number} pageIndex
+	 * @param {Coordinates} [coordinates]
+	 * @param {string} [color="black"]
+	 * @return {ComparePdf}
+	 */
 	addMask(pageIndex, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black") {
 		this.opts.masks.push({
 			pageIndex: pageIndex,
@@ -231,21 +350,42 @@ class ComparePdf {
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {PageMask[]} masks
+	 * @return {ComparePdf}
+	 */
 	addMasks(masks) {
 		this.opts.masks = [...this.opts.masks, ...masks];
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {Array<string | number>} pageIndexes
+	 * @return {ComparePdf}
+	 */
 	onlyPageIndexes(pageIndexes) {
 		this.opts.onlyPageIndexes = [...this.opts.onlyPageIndexes, ...pageIndexes];
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {Array<string | number>} pageIndexes
+	 * @return {ComparePdf}
+	 */
 	skipPageIndexes(pageIndexes) {
 		this.opts.skipPageIndexes = [...this.opts.skipPageIndexes, ...pageIndexes];
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {number} pageIndex
+	 * @param {Dimension} [coordinates]
+	 * @return {ComparePdf}
+	 */
 	cropPage(pageIndex, coordinates = { width: 0, height: 0, x: 0, y: 0 }) {
 		this.opts.crops.push({
 			pageIndex: pageIndex,
@@ -254,12 +394,22 @@ class ComparePdf {
 		return this;
 	}
 
+	/****************************************************
+	 *
+	 * @param {PageCrop[]} cropPagesList
+	 * @return {ComparePdf}
+	 */
 	cropPages(cropPagesList) {
 		this.opts.crops = [...this.opts.crops, ...cropPagesList];
 		return this;
 	}
 
-	async compare(comparisonType = "byImage") {
+	/****************************************************
+	 *
+	 * @param {CompareType} [comparisonType=CompareBy.IMAGE]
+	 * @return {Promise<Results>}
+	 */
+	async compare(comparisonType = CompareBy.IMAGE) {
 		if (this.result.status === "not executed" || this.result.status !== "failed") {
 			const compareDetails = {
 				actualPdfFilename: this.actualPdf,
@@ -270,10 +420,10 @@ class ComparePdf {
 				opts: this.opts
 			};
 			switch (comparisonType) {
-				case "byBase64":
+				case CompareBy.BASE64:
 					this.result = await compareData.comparePdfByBase64(compareDetails);
 					break;
-				case "byImage":
+				case CompareBy.IMAGE:
 				default:
 					this.result = await compareImages.comparePdfByImage(compareDetails);
 					break;
@@ -283,4 +433,5 @@ class ComparePdf {
 	}
 }
 
-export { ComparePdf, Engine, LogLevel };
+export default ComparePdf;
+export { CompareBy, ImageEngine, LogLevel };

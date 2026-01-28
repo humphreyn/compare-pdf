@@ -5,7 +5,6 @@ import path from "node:path";
  * Ensures that a directory is empty. Deletes directory contents
  * if the directory is not empty. If the directory does not exist,
  * it is created. The directory itself is not deleted.
- * Synchronous
  *
  * @param {string} dir        - directory to empty
  * @returns {undefined}
@@ -26,17 +25,39 @@ function emptyDirSync(dir) {
 	return undefined;
 }
 
-const copyJsonObject = (jsonObject) => {
-	return JSON.parse(JSON.stringify(jsonObject));
+/**************************************************
+ * Clones/copies a JSON Object
+ *
+ * @param {Object} obj    - JSON object to clone
+ * @returns {Object}
+ */
+const copyJsonObject = (obj) => {
+	return structuredClone(obj);
 };
 
+/**************************************************
+ * Ensures that a directory is empty. Deletes directory contents
+ * if the directory is not empty. If the directory does not exist,
+ * it is created. The directory itself is not deleted.
+ *
+ * @param {string} filepath        - directory to ensure and clean
+ * @returns {undefined}
+ */
 const ensureAndCleanupPath = (filepath) => {
-	emptyDirSync(filepath);
+	return emptyDirSync(filepath);
 };
 
+/**************************************************
+ * Ensures actualPdfRootFolder and baselinePdfRootFolder
+ * exists
+ *
+ * @param {ComparePdfConfig} config        - directory to ensure and clean
+ * @returns {undefined}
+ */
 const ensurePathsExist = (config) => {
 	fs.mkdirSync(config.paths.actualPdfRootFolder, { "recursive": true, "mode": 0o777 });
 	fs.mkdirSync(config.paths.baselinePdfRootFolder, { "recursive": true, "mode": 0o777 });
+	return undefined;
 };
 
 export default {
