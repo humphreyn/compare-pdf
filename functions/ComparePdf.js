@@ -16,7 +16,7 @@ const LogLevel = Object.freeze({
 });
 
 /**
- * Enum for Verbosity Levels
+ * Enum for accepted Engines
  * @readonly
  * @enum { string }
  */

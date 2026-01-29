@@ -184,11 +184,11 @@ export const CompareBy: Readonly<{
 	IMAGE: "Image";
 }>;
 /**
- * Enum for Verbosity Levels
+ * Enum for accepted Engines
  */
 export type ImageEngine = string;
 /**
- * Enum for Verbosity Levels
+ * Enum for accepted Engines
  * @readonly
  * @enum { string }
  */
