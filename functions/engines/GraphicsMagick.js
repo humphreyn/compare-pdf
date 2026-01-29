@@ -50,6 +50,14 @@ class GraphicsMagick {
 		});
 	}
 
+	/**************************************************
+	 * Function to apply mask
+	 *
+	 * @param {string} pngFilePath
+	 * @param {Coordinates} coordinates
+	 * @param {string} color
+	 * @return {Promise<unknown>}
+	 */
 	applyMask(pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black") {
 		return new Promise((resolve, reject) => {
 			this.gm(pngFilePath)
@@ -62,6 +70,14 @@ class GraphicsMagick {
 		});
 	}
 
+	/**************************************************
+	 * Function to apply crop
+	 *
+	 * @param {string} pngFilePath
+	 * @param {Dimension} coordinates
+	 * @param {number} index
+	 * @return {Promise<unknown>}
+	 */
 	applyCrop(pngFilePath, coordinates = { width: 0, height: 0, x: 0, y: 0 }, index = 0) {
 		return new Promise((resolve, reject) => {
 			this.gm(pngFilePath)
