@@ -7,6 +7,15 @@ const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
 const STANDARD_FONT_DATA_URL = "../../node_modules/pdfjs-dist/standard_fonts/";
 
+/**************************************************
+ * Convert PDF page to PNG image
+ *
+ * @param pdfDocument
+ * @param {number} pageNumber
+ * @param {string} filename
+ * @param {boolean} [isSinglePage=false]
+ * @return {Promise<void>}
+ */
 const pdfPageToPng = async (pdfDocument, pageNumber, filename, isSinglePage = false) => {
 	const page = await pdfDocument.getPage(pageNumber);
 	const viewport = page.getViewport({ scale: 1.440026 });
@@ -26,6 +35,14 @@ const pdfPageToPng = async (pdfDocument, pageNumber, filename, isSinglePage = fa
 	fs.writeFileSync(pngFileName, image);
 };
 
+/**************************************************
+ * Convert PDF to PNG image
+ *
+ * @param {Buffer|string} pdfDetails
+ * @param {string} pngFilePath
+ * @param {ComparePDF.Config} config
+ * @return {Promise<void>}
+ */
 const pdfToPng = async (pdfDetails, pngFilePath, config) => {
 	const options = {
 		disableFontFace: Object.prototype.hasOwnProperty.call(config.settings, "disableFontFace")
@@ -52,6 +69,14 @@ const pdfToPng = async (pdfDetails, pngFilePath, config) => {
 	}
 };
 
+/**************************************************
+ * Apply mask to PNG image
+ *
+ * @param {string} pngFilePath
+ * @param {ComparePDF.Coordinates} coordinates
+ * @param {string} [color="black"]
+ * @return {Promise<boolean>}
+ */
 const applyMask = (pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black") => {
 	return new Promise((resolve, reject) => {
 		try {
@@ -65,13 +90,21 @@ const applyMask = (pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, co
 			ctx.fillStyle = color;
 			ctx.fillRect(coordinates.x0, coordinates.y0, coordinates.x1 - coordinates.x0, coordinates.y1 - coordinates.y0);
 			fs.writeFileSync(pngFilePath, canvas.toBuffer("image/png"));
-			resolve();
+			resolve(true);
 		} catch (error) {
 			reject(error);
 		}
 	});
 };
 
+/**************************************************
+ * Apply crop to PNG image
+ *
+ * @param {string} pngFilePath
+ * @param {ComparePDF.Dimension} coordinates
+ * @param {number} [index=0]
+ * @return {Promise<unknown>}
+ */
 const applyCrop = (pngFilePath, coordinates = { width: 0, height: 0, x: 0, y: 0 }, index = 0) => {
 	return new Promise((resolve, reject) => {
 		try {

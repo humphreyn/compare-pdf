@@ -1,14 +1,17 @@
 import path from "node:path";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import gm from "gm";
+import { Engine } from "../enums.js";
 
 class GraphicsMagick {
 	/**************************************************
-	 * @param {('graphicsMagick'|'imageMagick')} [engine='graphicsMagick']  - optional engine, Default is 'graphicsMagick'
+	 * Constructor for GraphicsMagick class
+	 *
+	 * @param {(Engine.GRAPHICS_MAGICK|Engine.IMAGE_MAGICK)} [engine=Engine.GRAPHICS_MAGICK]  - optional engine, Default is Engine.GRAPHICS_MAGICK
 	 * @returns {GraphicsMagick}
 	 */
-	constructor(engine = "graphicsMagick") {
-		this.gm = engine === "imageMagick" ? gm.subClass({ imageMagick: "7+" }) : gm;
+	constructor(engine = Engine.GRAPHICS_MAGICK) {
+		this.gm = engine === Engine.GRAPHICS_MAGICK ? gm.subClass({ imageMagick: "7+" }) : gm;
 	}
 
 	pdfToPng(pdfDetails, pngFilePath, config) {
@@ -55,7 +58,7 @@ class GraphicsMagick {
 	 *
 	 * @param {string} pngFilePath
 	 * @param {Coordinates} coordinates
-	 * @param {string} color
+	 * @param {string} [color="black"]
 	 * @return {Promise<unknown>}
 	 */
 	applyMask(pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black") {
