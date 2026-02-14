@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import * as chai from "chai";
 import chaiFiles from "chai-files";
-import ComparePdf, { CompareBy, ImageEngine, LogLevel } from "../functions/ComparePdf.js";
+import ComparePdf, { CompareBy, Engine, LogLevel } from "../functions/ComparePdf.js";
 
 const defaultConfig = {
 	paths: {
@@ -16,7 +16,7 @@ const defaultConfig = {
 		diffPngRootFolder: "./data/diffPngs"
 	},
 	settings: {
-		imageEngine: ImageEngine.NATIVE,
+		imageEngine: Engine.NATIVE,
 		density: 100,
 		quality: 70,
 		tolerance: 0,
@@ -32,12 +32,12 @@ const defaultConfig = {
 chai.use(chaiFiles);
 
 /****************************************************
- * Retuns the number of pages in a pdf file
+ * Returns the number of pages in a PDF file
  *
  * @param {Object} options
  * @param {string} options.url                    - The filename and path to the actual pdf
- * @param {string} [options.password=undefined]   - optional password of the pdf
- * @returns {Promise<number>}                     - The number of pages in the pdf
+ * @param {string} [options.password=undefined]   - optional password of the PDF
+ * @returns {Promise<number>}                     - The number of pages in the PDF
  * @private
  */
 function getNoOfPages({ url, password = undefined } = {}) {
@@ -52,7 +52,7 @@ function getNoOfPages({ url, password = undefined } = {}) {
 			return loadingTask.promise;
 		})
 		.then((document) => {
-			return document.numPages;
+			return Number(document["numPages"]);
 		});
 }
 
@@ -67,7 +67,7 @@ describe("Compare Pdf Common Tests", () => {
 				diffPngRootFolder: "./test/data/diffPngs"
 			},
 			settings: {
-				imageEngine: ImageEngine.GRAPHICS_MAGICK,
+				imageEngine: Engine.GRAPHICS_MAGICK,
 				density: 80,
 				quality: 80,
 				tolerance: 100,
@@ -118,7 +118,7 @@ describe("Compare Pdf Common Tests", () => {
 
 	[
 		{
-			imageEngine: ImageEngine.GRAPHICS_MAGICK
+			imageEngine: Engine.GRAPHICS_MAGICK
 		},
 		{
 			density: 80
@@ -164,7 +164,7 @@ describe("Compare Pdf Common Tests", () => {
 	});
 
 	["actualPdfRootFolder", "baselinePdfRootFolder"].forEach((key) => {
-		it(`Should throw error when config has emtpy ${key}`, async () => {
+		it(`Should throw error when config has empty ${key}`, async () => {
 			const config = {
 				paths: {}
 			};
@@ -262,7 +262,7 @@ describe("Compare Pdf Common Tests", () => {
 		const result = await comparePdf.init().actualPdfFile(actualFileName).baselinePdfFile(baselineFileName).compare();
 
 		chai.expect(result.status).to.equal("failed");
-		chai.expect(result.message).to.equal("Actual pdf is file was not set. Please define correctly then try again.");
+		chai.expect(result.message).to.equal("Actual pdf file was not set. Please define correctly then try again.");
 		chai.expect(chaiFiles.dir(actualFile)).to.exist;
 		chai.expect(chaiFiles.file(baselineFile)).to.exist;
 	});
@@ -304,7 +304,7 @@ describe("Compare Pdf Common Tests", () => {
 		chai.expect(result.status).to.equal("failed");
 		chai
 			.expect(result.message)
-			.to.equal(`Actual pdf file: '${actualFileName}' does not exists. Please define correctly then try again.`);
+			.to.equal(`Actual pdf file: '${actualFileName}' does not exist. Please define correctly then try again.`);
 		chai.expect(chaiFiles.file(actualFile)).to.not.exist;
 		chai.expect(chaiFiles.file(baselineFile)).to.exist;
 	});
@@ -326,7 +326,7 @@ describe("Compare Pdf Common Tests", () => {
 		chai.expect(result.status).to.equal("failed");
 		chai
 			.expect(result.message)
-			.to.equal(`Baseline pdf file: '${baselineFileName}' does not exists. Please define correctly then try again.`);
+			.to.equal(`Baseline pdf file: '${baselineFileName}' does not exist. Please define correctly then try again.`);
 		chai.expect(chaiFiles.file(actualFile)).to.exist;
 		chai.expect(chaiFiles.file(baselineFile)).to.not.exist;
 	});
@@ -370,12 +370,13 @@ describe("Compare Pdf Common Tests", () => {
 });
 
 describe("Compare Pdf By Image Tests", () => {
-	const engines = Object.values(ImageEngine);
-	for (const engine of engines) {
-		describe(`Engine: ${engine}`, () => {
+	const keys = Object.keys(Engine);
+	for (const key of keys) {
+		const imageEngine = Engine[key];
+		describe(`Engine: ${imageEngine}`, () => {
 			const config = {
 				settings: {
-					imageEngine: engine
+					imageEngine: imageEngine
 				}
 			};
 
@@ -549,7 +550,7 @@ describe("Compare Pdf By Image Tests", () => {
 				chai.expect(result.details).to.not.be.null;
 			});
 
-			it("Should be able to verify same PDFs with Croppings", async () => {
+			it("Should be able to verify same PDFs with Cropping's", async () => {
 				const comparePdf = new ComparePdf(config);
 				const result = await comparePdf
 					.init()
@@ -561,7 +562,7 @@ describe("Compare Pdf By Image Tests", () => {
 				chai.expect(result.status).to.equal("passed");
 			});
 
-			it("Should be able to verify same PDFs with Multiple Croppings", async () => {
+			it("Should be able to verify same PDFs with Multiple Cropping's", async () => {
 				const croppings = [
 					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 265 } },
 					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 520 } },

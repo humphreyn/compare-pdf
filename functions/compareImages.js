@@ -1,12 +1,18 @@
-import _ from "lodash";
 import * as fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import utils from "./utils.js";
-import GraphicsMagick from "./engines/GraphicsMagick.js";
-import native from "./engines/native.js";
+import getEngine from "./getEngine.js";
 
+/****************************************************
+ *
+ * @param {string} actual
+ * @param {string} baseline
+ * @param {string} diff
+ * @param {ComparePDF.Config} config
+ * @return {Promise<unknown>}
+ */
 const comparePngs = (actual, baseline, diff, config) => {
 	return new Promise((resolve) => {
 		try {
@@ -15,14 +21,11 @@ const comparePngs = (actual, baseline, diff, config) => {
 			const { width, height } = actualPng;
 			const diffPng = new PNG({ width, height });
 
-			const threshold = config.settings && config.settings.threshold ? config.settings.threshold : 0.05;
-			const tolerance = config.settings && config.settings.tolerance ? config.settings.tolerance : 0;
-
 			const numDiffPixels = pixelmatch(actualPng.data, baselinePng.data, diffPng.data, width, height, {
-				threshold: threshold
+				threshold: config.settings.threshold
 			});
 
-			if (numDiffPixels > tolerance) {
+			if (numDiffPixels > config.settings.tolerance) {
 				fs.writeFileSync(diff, PNG.sync.write(diffPng));
 				resolve({ status: "failed", numDiffPixels: numDiffPixels, diffPng: diff });
 			} else {
@@ -34,6 +37,11 @@ const comparePngs = (actual, baseline, diff, config) => {
 	});
 };
 
+/**************************************************
+ *
+ * @param {ComparePDF.CompareImageDetails} compareDetails
+ * @return {Promise<ComparePDF.Results>}
+ */
 const comparePdfByImage = async (compareDetails) => {
 	try {
 		const actualPdfFilename = compareDetails.actualPdfFilename;
@@ -43,9 +51,7 @@ const comparePdfByImage = async (compareDetails) => {
 		const config = compareDetails.config;
 		const opts = compareDetails.opts;
 
-		const imageEngine = ["graphicsMagick", "imageMagick"].includes(config.settings.imageEngine)
-			? new GraphicsMagick(config.settings.imageEngine)
-			: native;
+		const imageEngine = getEngine(config.settings.imageEngine);
 
 		const actualPdfBaseName = path.parse(actualPdfFilename).name;
 		const baselinePdfBaseName = path.parse(baselinePdfFilename).name;
@@ -117,7 +123,7 @@ const comparePdfByImage = async (compareDetails) => {
 				}
 
 				if (opts.masks) {
-					const pageMasks = _.filter(opts.masks, { pageIndex: index });
+					const pageMasks = opts.masks.filter((mask) => mask.pageIndex === index);
 					if (pageMasks && pageMasks.length > 0) {
 						for (const pageMask of pageMasks) {
 							await imageEngine.applyMask(actualPng, pageMask.coordinates, pageMask.color);
@@ -127,7 +133,7 @@ const comparePdfByImage = async (compareDetails) => {
 				}
 
 				if (opts.crops && opts.crops.length > 0) {
-					const pageCroppings = _.filter(opts.crops, { pageIndex: index });
+					const pageCroppings = opts.crops.filter((crop) => crop.pageIndex === index);
 					if (pageCroppings && pageCroppings.length > 0) {
 						for (let cropIndex = 0; cropIndex < pageCroppings.length; cropIndex++) {
 							await imageEngine.applyCrop(actualPng, pageCroppings[cropIndex].coordinates, cropIndex);
@@ -152,7 +158,7 @@ const comparePdfByImage = async (compareDetails) => {
 				utils.ensureAndCleanupPath(config.paths.baselinePngRootFolder);
 			}
 
-			const failedResults = _.filter(comparisonResults, (res) => res.status === "failed");
+			const failedResults = comparisonResults.filter((res) => res.status === "failed");
 			if (failedResults.length > 0) {
 				return Promise.resolve({
 					status: "failed",
