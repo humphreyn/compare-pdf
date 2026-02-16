@@ -4,7 +4,7 @@
 	"description": "Standalone node module that compares PDF's",
 	"type": "module",
 	"exports": "./functions/ComparePdf.js",
-	"types": "./types/comparePdf.d.ts",
+	"types": "./types/comparePDF.d.ts",
 	"scripts": {
 		"lint": "eslint . --fix",
 		"pretty": "npx prettier --write .",

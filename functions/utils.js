@@ -51,7 +51,7 @@ const ensureAndCleanupPath = (filepath) => {
  * Ensures actualPdfRootFolder and baselinePdfRootFolder
  * exists
  *
- * @param {ComparePdf.Config} config        - directory to ensure and clean
+ * @param {ComparePDF.Config} config        - directory to ensure and clean
  * @returns {undefined}
  */
 const ensurePathsExist = (config) => {

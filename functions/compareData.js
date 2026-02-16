@@ -2,8 +2,8 @@ import path from "node:path";
 
 /**************************************************
  *
- * @param {ComparePdf.CompareDetails} compareDetails
- * @return {Promise<ComparePdf.Results>}
+ * @param {ComparePDF.CompareDetails} compareDetails
+ * @return {Promise<ComparePDF.Results>}
  */
 const comparePdfByBase64 = async (compareDetails) => {
 	const actualPdfFilename = compareDetails.actualPdfFilename;

@@ -10,7 +10,7 @@ import getEngine from "./getEngine.js";
  * @param {string} actual
  * @param {string} baseline
  * @param {string} diff
- * @param {ComparePdf.Config} config
+ * @param {ComparePDF.Config} config
  * @return {Promise<unknown>}
  */
 const comparePngs = (actual, baseline, diff, config) => {
@@ -39,8 +39,8 @@ const comparePngs = (actual, baseline, diff, config) => {
 
 /**************************************************
  *
- * @param {ComparePdf.CompareImageDetails} compareDetails
- * @return {Promise<ComparePdf.Results>}
+ * @param {ComparePDF.CompareImageDetails} compareDetails
+ * @return {Promise<ComparePDF.Results>}
  */
 const comparePdfByImage = async (compareDetails) => {
 	try {

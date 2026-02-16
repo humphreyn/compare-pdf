@@ -11,15 +11,15 @@ export default class ComparePdf {
 	/**************************************************
 	 * @constructor Constructor for ComparePdf class
 	 *
-	 * @param {ComparePdf.Config} config={}                                               - optional paths object with the following options:
-	 * @param {ComparePdf.Paths} [config.paths={}]                                                   - optional paths object with the following options:
+	 * @param {ComparePDF.Config} config={}                                               - optional paths object with the following options:
+	 * @param {Paths} [config.paths={}]                                                   - optional paths object with the following options:
 	 * @param {string} [config.paths.actualPdfRootFolder="./data/actualPdfs"]             - optional, root folder of Actual PDF. Default "./data/actualPdfs"
 	 * @param {string} [config.paths.actualPngRootFolder="./data/actualPngs"]             - optional, root folder of Actual png/images. Default "./data/actualPngs"
 	 * @param {string} [config.paths.baselinePdfRootFolder="./data/baselinePdfs"]         - optional, root folder of Baseline PDF. Default "./data/baselinePdfs"
 	 * @param {string} [config.paths.baselinePngRootFolder="./data/baselinePngs"]         - optional, root folder of Baseline png/images. Default "./data/baselinePngs"
 	 * @param {string} [config.paths.diffPngRootFolder="./data/diffPngs"]                 - optional, root folder of Difference png/images. Default "./data/diffPngs"
-	 * @param {ComparePdf.Settings} [config.settings={}]                                  - optional, settings object with the following options:
-	 * @param {ComparePdf.Engine|Engine} [config.settings.imageEngine=Engine.NATIVE]      - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
+	 * @param {ComparePDF.Settings} [config.settings={}]                                  - optional, settings object with the following options:
+	 * @param {ComparePDF.Engine|Engine} [config.settings.imageEngine=Engine.NATIVE]      - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
 	 * @param {number} [config.settings.density=100]                                      - optional, (from gm) the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image. Default 100
 	 * @param {number} [config.settings.quality=70]                                       - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best). Default 70
 	 * @param {number} [config.settings.tolerance=0]                                      - optional, the allowable pixel count that is different between the compared images. Default 0
@@ -28,7 +28,7 @@ export default class ComparePdf {
 	 * @param {boolean} [config.settings.matchPageCount=true]                             - optional, boolean flag that enables or disables the page count verification between the actual and baseline PDFs. Default true
 	 * @param {boolean} [config.settings.disableFontFace=true]                            - optional, specifies if fonts are converted to OpenType fonts and loaded by the Font Loading API or @font-face rules.
 	 *                                                                                    - If false, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands, default true
-	 * @param {ComparePdf.Verbosity|LogLevel} [config.settings.verbosity=LogLevel.ERROR]  - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
+	 * @param {ComparePDF.Verbosity|LogLevel} [config.settings.verbosity=LogLevel.ERROR]  - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
 	 * @param {string} [config.settings.password=undefined]                               - optional, setting to supply a password for a password protected or restricted PDF. Default undefined
 	 * @return {ComparePdf}
 	 */
@@ -79,7 +79,7 @@ export default class ComparePdf {
 		/**************************************************
 		 * ComparePdf Options
 		 *
-		 * @type {ComparePdf.Opts}
+		 * @type {ComparePDF.Opts}
 		 */
 		this.opts = {
 			masks: [],
@@ -91,7 +91,7 @@ export default class ComparePdf {
 		/**************************************************
 		 * ComparePdf Options
 		 *
-		 * @type {ComparePdf.Results}
+		 * @type {ComparePDF.Results}
 		 */
 		this.result = {
 			status: "not executed",
@@ -230,7 +230,7 @@ export default class ComparePdf {
 	/****************************************************
 	 *
 	 * @param {number} pageIndex          - page index for the mask to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {ComparePdf.Coordinates} [coordinates={ x0: 0, y0: 0, x1: 0, y1: 0 }]
+	 * @param {ComparePDF.Coordinates} [coordinates={ x0: 0, y0: 0, x1: 0, y1: 0 }]
 	 * @param {string} [color="black"]
 	 * @return {ComparePdf}
 	 */
@@ -245,7 +245,7 @@ export default class ComparePdf {
 
 	/****************************************************
 	 *
-	 * @param {ComparePdf.PageMask[]} masks
+	 * @param {ComparePDF.PageMask[]} masks
 	 * @return {ComparePdf}
 	 */
 	addMasks(masks) {
@@ -276,7 +276,7 @@ export default class ComparePdf {
 	/****************************************************
 	 *
 	 * @param {number} pageIndex            - page index for the crop to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {ComparePdf.Dimension} [coordinates={ width: 0, height: 0, x: 0, y: 0 }]
+	 * @param {ComparePDF.Dimension} [coordinates={ width: 0, height: 0, x: 0, y: 0 }]
 	 * @return {ComparePdf}
 	 */
 	cropPage(pageIndex, coordinates = { width: 0, height: 0, x: 0, y: 0 }) {
@@ -289,7 +289,7 @@ export default class ComparePdf {
 
 	/****************************************************
 	 *
-	 * @param {ComparePdf.PageCrop[]} cropPagesList
+	 * @param {ComparePDF.PageCrop[]} cropPagesList
 	 * @return {ComparePdf}
 	 */
 	cropPages(cropPagesList) {
@@ -299,8 +299,8 @@ export default class ComparePdf {
 
 	/****************************************************
 	 *
-	 * @param {ComparePdf.CompareType|CompareBy} [comparisonType=CompareBy.IMAGE]
-	 * @return {Promise<ComparePdf.Results>}
+	 * @param {ComparePDF.CompareType|CompareBy} [comparisonType=CompareBy.IMAGE]
+	 * @return {Promise<ComparePDF.Results>}
 	 */
 	async compare(comparisonType = CompareBy.IMAGE) {
 		if (this.result.status === "not executed" || this.result.status !== "failed") {
