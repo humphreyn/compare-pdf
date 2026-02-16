@@ -20,6 +20,7 @@ const config = [
 			"**/package-lock.json",
 			"**/examples/",
 			"**/*.d.ts",
+			"**/*.ts",
 			"**/*.pdf",
 			"**/*.MP4",
 			"**/*.png"

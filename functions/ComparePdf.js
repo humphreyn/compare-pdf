@@ -5,8 +5,6 @@ import compareData from "./compareData.js";
 import compareImages from "./compareImages.js";
 import { CompareBy, Engine, LogLevel } from "./enums.js";
 
-export { CompareBy, Engine, LogLevel };
-
 export default class ComparePdf {
 	/**************************************************
 	 * @constructor Constructor for ComparePdf class
@@ -19,7 +17,7 @@ export default class ComparePdf {
 	 * @param {string} [config.paths.baselinePngRootFolder="./data/baselinePngs"]         - optional, root folder of Baseline png/images. Default "./data/baselinePngs"
 	 * @param {string} [config.paths.diffPngRootFolder="./data/diffPngs"]                 - optional, root folder of Difference png/images. Default "./data/diffPngs"
 	 * @param {ComparePDF.Settings} [config.settings={}]                                  - optional, settings object with the following options:
-	 * @param {ComparePDF.Engine|Engine} [config.settings.imageEngine=Engine.NATIVE]      - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
+	 * @param {ComparePDF.EngineTypes} [config.settings.imageEngine=Engine.NATIVE]        - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
 	 * @param {number} [config.settings.density=100]                                      - optional, (from gm) the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image. Default 100
 	 * @param {number} [config.settings.quality=70]                                       - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best). Default 70
 	 * @param {number} [config.settings.tolerance=0]                                      - optional, the allowable pixel count that is different between the compared images. Default 0
@@ -28,7 +26,7 @@ export default class ComparePdf {
 	 * @param {boolean} [config.settings.matchPageCount=true]                             - optional, boolean flag that enables or disables the page count verification between the actual and baseline PDFs. Default true
 	 * @param {boolean} [config.settings.disableFontFace=true]                            - optional, specifies if fonts are converted to OpenType fonts and loaded by the Font Loading API or @font-face rules.
 	 *                                                                                    - If false, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands, default true
-	 * @param {ComparePDF.Verbosity|LogLevel} [config.settings.verbosity=LogLevel.ERROR]  - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
+	 * @param {ComparePDF.Verbosity} [config.settings.verbosity=LogLevel.ERROR]  - optional, specifies the logging level, default LogLevel.Error, Error = 0, Warning = 1, Info = 5. Default 0 Error
 	 * @param {string} [config.settings.password=undefined]                               - optional, setting to supply a password for a password protected or restricted PDF. Default undefined
 	 * @return {ComparePdf}
 	 */
@@ -299,7 +297,7 @@ export default class ComparePdf {
 
 	/****************************************************
 	 *
-	 * @param {ComparePDF.CompareType|CompareBy} [comparisonType=CompareBy.IMAGE]
+	 * @param {ComparePDF.CompareType} [comparisonType=CompareBy.IMAGE]
 	 * @return {Promise<ComparePDF.Results>}
 	 */
 	async compare(comparisonType = CompareBy.IMAGE) {

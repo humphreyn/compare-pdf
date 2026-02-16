@@ -5,7 +5,7 @@ import { Engine } from "./enums.js";
 /**************************************************
  * Factory function to get the appropriate engine based on the input
  *
- * @param {ComparePDF.Engine} engine
+ * @param {ComparePDF.EngineTypes} engine
  * @return {(GraphicsMagick|native)}
  */
 export default function getEngine(engine) {

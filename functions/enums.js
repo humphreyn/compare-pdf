@@ -12,7 +12,7 @@ export const LogLevel = {
 /**
  * Enum for accepted Engines
  * @readonly
- * @enum {ComparePDF.Engine}
+ * @enum {ComparePDF.EngineTypes}
  */
 export const Engine = {
 	IMAGE_MAGICK: "imageMagick",
