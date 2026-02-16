@@ -40,7 +40,7 @@ const pdfPageToPng = async (pdfDocument, pageNumber, filename, isSinglePage = fa
  *
  * @param {Buffer|string} pdfDetails
  * @param {string} pngFilePath
- * @param {ComparePDF.Config} config
+ * @param {ComparePdf.Config} config
  * @return {Promise<void>}
  */
 const pdfToPng = async (pdfDetails, pngFilePath, config) => {
@@ -73,7 +73,7 @@ const pdfToPng = async (pdfDetails, pngFilePath, config) => {
  * Apply mask to PNG image
  *
  * @param {string} pngFilePath
- * @param {ComparePDF.Coordinates} coordinates
+ * @param {ComparePdf.Coordinates} coordinates
  * @param {string} [color="black"]
  * @return {Promise<boolean>}
  */
@@ -101,7 +101,7 @@ const applyMask = (pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, co
  * Apply crop to PNG image
  *
  * @param {string} pngFilePath
- * @param {ComparePDF.Dimension} coordinates
+ * @param {ComparePdf.Dimension} coordinates
  * @param {number} [index=0]
  * @return {Promise<unknown>}
  */

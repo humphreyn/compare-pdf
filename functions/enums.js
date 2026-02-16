@@ -1,7 +1,7 @@
 /**
  * Enum for Verbosity Levels
  * @readonly
- * @enum {ComparePDF.Verbosity}
+ * @enum {ComparePdf.Verbosity}
  */
 export const LogLevel = {
 	ERROR: 0,
@@ -12,7 +12,7 @@ export const LogLevel = {
 /**
  * Enum for accepted Engines
  * @readonly
- * @enum {ComparePDF.Engine}
+ * @enum {ComparePdf.Engine}
  */
 export const Engine = {
 	IMAGE_MAGICK: "imageMagick",
@@ -23,7 +23,7 @@ export const Engine = {
 /**
  * Enum for Image Compare Mode
  * @readonly
- * @enum {ComparePDF.CompareType}
+ * @enum {ComparePdf.CompareType}
  */
 export const CompareBy = {
 	BASE64: "Base64",
