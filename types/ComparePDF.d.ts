@@ -1,72 +1,20 @@
-// import { CompareBy, CompareType, Engine, EngineTypes, LogLevel, Verbosity } from "./index.ts";
-
 export namespace ComparePDF {
-	/**
-	 * Enum for Verbosity Levels
-	 * @readonly
-	 * @enum {number}
-	 */
-	export const enum LogLevel {
-		ERROR = 0,
-		WARNING = 1,
-		INFO = 5
-	}
-
-	/**
-	 * Enum for accepted Engines
-	 * @readonly
-	 * @enum {string}
-	 */
-	export const enum Engine {
-		IMAGE_MAGICK = "imageMagick",
-		GRAPHICS_MAGICK = "graphicsMagick",
-		NATIVE = "native"
-	}
-
-	/**
-	 * Enum for Image Compare Mode
-	 * @readonly
-	 * @enum {string}
-	 */
-	export const enum CompareBy {
-		BASE64 = "Base64",
-		IMAGE = "Image"
-	}
-
 	/**
 	 * Logging verbosity levels
 	 * @readonly
+	 * @type {number}
 	 */
-	export type Verbosity = LogLevel.ERROR | LogLevel.WARNING | LogLevel.INFO;
-
+	export type Verbosity = 0 | 1 | 5;
 	/**
 	 * Engines for image comparison
 	 * @readonly
 	 */
-	export type EngineTypes = Engine.IMAGE_MAGICK | Engine.GRAPHICS_MAGICK | Engine.NATIVE;
-
+	export type Engine = "imageMagick" | "graphicsMagick" | "native";
 	/**
 	 * PDF comparison modes
 	 * @readonly
 	 */
-	export type CompareType = CompareBy.BASE64 | CompareBy.IMAGE;
-
-	// /**
-	//  * Logging verbosity levels
-	//  * @readonly
-	//  * @type {number}
-	//  */
-	// export type Verbosity = 0 | 1 | 5;
-	// /**
-	//  * Engines for image comparison
-	//  * @readonly
-	//  */
-	// export type Engine = "imageMagick" | "graphicsMagick" | "native";
-	// /**
-	//  * PDF comparison modes
-	//  * @readonly
-	//  */
-	// export type CompareType = "Base64" | "Image";
+	export type CompareType = "Base64" | "Image";
 
 	export type Paths = {
 		actualPdfRootFolder?: string;
@@ -77,7 +25,7 @@ export namespace ComparePDF {
 	};
 
 	export type Settings = {
-		imageEngine?: EngineTypes;
+		imageEngine?: Engine;
 		density?: number;
 		quality?: number;
 		tolerance?: number;

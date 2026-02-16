@@ -5,8 +5,7 @@ import { readFile } from "node:fs/promises";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import * as chai from "chai";
 import chaiFiles from "chai-files";
-import ComparePdf from "../functions/ComparePdf.js";
-import { CompareBy, Engine, LogLevel } from "../functions/enums.js";
+import ComparePdf, { CompareBy, Engine, LogLevel } from "../functions/ComparePdf.js";
 
 const defaultConfig = {
 	paths: {
