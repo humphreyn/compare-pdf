@@ -5,7 +5,7 @@ import compareData from "./compareData.js";
 import compareImages from "./compareImages.js";
 import { CompareBy, Engine, LogLevel } from "./enums.js";
 
-export { CompareBy, Engine, LogLevel };
+export * from "./enums.js";
 
 export default class ComparePdf {
 	/**************************************************
