@@ -5,7 +5,8 @@ import { readFile } from "node:fs/promises";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import * as chai from "chai";
 import chaiFiles from "chai-files";
-import ComparePdf, { CompareBy, Engine, LogLevel } from "../functions/ComparePdf.js";
+import ComparePdf from "../functions/ComparePdf.js";
+import { CompareBy, Engine, LogLevel } from "../functions/enums.js";
 
 const defaultConfig = {
 	paths: {
@@ -556,7 +557,7 @@ describe("Compare Pdf By Image Tests", () => {
 					.init()
 					.actualPdfFile("same.pdf")
 					.baselinePdfFile("baseline.pdf")
-					.cropPage(1, { width: 530, height: 210, x: 0, y: 415 })
+					.cropPage({ pageIndex: 1, dimension: { width: 530, height: 210, x: 0, y: 415 } })
 					.compare();
 
 				chai.expect(result.status).to.equal("passed");
@@ -564,9 +565,9 @@ describe("Compare Pdf By Image Tests", () => {
 
 			it("Should be able to verify same PDFs with Multiple Cropping's", async () => {
 				const croppings = [
-					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 265 } },
-					{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 520 } },
-					{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }
+					{ pageIndex: 0, dimension: { width: 210, height: 180, x: 615, y: 265 } },
+					{ pageIndex: 0, dimension: { width: 210, height: 180, x: 615, y: 520 } },
+					{ pageIndex: 1, dimension: { width: 530, height: 210, x: 0, y: 415 } }
 				];
 				const comparePdf = new ComparePdf(config);
 				const result = await comparePdf
@@ -585,8 +586,8 @@ describe("Compare Pdf By Image Tests", () => {
 					.init()
 					.actualPdfFile("maskedSame.pdf")
 					.baselinePdfFile("baseline.pdf")
-					.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 })
-					.addMask(1, { x0: 330, y0: 40, x1: 410, y1: 70 })
+					.addMask({ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 } })
+					.addMask({ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 } })
 					.compare();
 
 				chai.expect(result.status).to.equal("passed");
@@ -721,10 +722,16 @@ describe("Compare Pdf By Base64 Tests", () => {
 describe("Compare Pdf Image Opts", () => {
 	it("Should be able to set image opts", async () => {
 		const croppings = [
-			{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 265 } },
-			{ pageIndex: 0, coordinates: { width: 210, height: 180, x: 615, y: 520 } },
-			{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }
+			{ pageIndex: 0, dimension: { width: 210, height: 180, x: 615, y: 265 } },
+			{ pageIndex: 0, dimension: { width: 210, height: 180, x: 615, y: 520 } },
+			{ pageIndex: 1, dimension: { width: 530, height: 210, x: 0, y: 415 } }
 		];
+		const crop = { pageIndex: 2, dimension: { width: 210, height: 180, x: 615, y: 265 } };
+		const masks = [
+			{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: "black" },
+			{ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 }, color: "blue" }
+		];
+		const mask = { pageIndex: 2, coordinates: { x0: 10, y0: 30, x1: 100, y1: 70 }, color: "red" };
 
 		const comparePdf = new ComparePdf();
 		const result = await comparePdf
@@ -732,16 +739,16 @@ describe("Compare Pdf Image Opts", () => {
 			.actualPdfFile("maskedSame.pdf")
 			.baselinePdfFile("baseline.pdf")
 			.cropPages(croppings)
-			.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 })
-			.addMask(1, { x0: 330, y0: 40, x1: 410, y1: 70 })
+			.cropPage(crop)
+			.addMasks(masks)
+			.addMask(mask)
 			.onlyPageIndexes([0])
 			.skipPageIndexes([1]);
 
+		croppings.push(crop);
+		masks.push(mask);
 		chai.expect(result.opts).to.eql({
-			masks: [
-				{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: "black" },
-				{ pageIndex: 1, coordinates: { x0: 330, y0: 40, x1: 410, y1: 70 }, color: "black" }
-			],
+			masks: masks,
 			crops: croppings,
 			onlyPageIndexes: [0],
 			skipPageIndexes: [1]
@@ -755,12 +762,12 @@ describe("Compare Pdf Image Opts", () => {
 			.init()
 			.actualPdfFile("maskedSame.pdf")
 			.baselinePdfFile("baseline.pdf")
-			.cropPage(1, { width: 530, height: 210, x: 0, y: 415 })
-			.addMask(1, { x0: 20, y0: 40, x1: 100, y1: 70 });
+			.cropPage({ pageIndex: 1, dimension: { width: 530, height: 210, x: 0, y: 415 } })
+			.addMask({ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 } });
 
 		chai.expect(result.opts).to.eql({
 			masks: [{ pageIndex: 1, coordinates: { x0: 20, y0: 40, x1: 100, y1: 70 }, color: "black" }],
-			crops: [{ pageIndex: 1, coordinates: { width: 530, height: 210, x: 0, y: 415 } }],
+			crops: [{ pageIndex: 1, dimension: { width: 530, height: 210, x: 0, y: 415 } }],
 			onlyPageIndexes: [],
 			skipPageIndexes: []
 		});

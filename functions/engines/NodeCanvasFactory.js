@@ -1,5 +1,9 @@
 import Canvas from "@napi-rs/canvas";
 
+/**
+ * @typedef {import("../typeDefs.js").CanvasAndContext} CanvasAndContext
+ */
+
 class NodeCanvasFactory {
 	constructor() {}
 
@@ -8,7 +12,7 @@ class NodeCanvasFactory {
 	 *
 	 * @param {number} width
 	 * @param {number} height
-	 * @return {Object<{canvas: Canvas, context: SKRSContext2D}>}
+	 * @return {CanvasAndContext}
 	 */
 	create(width, height) {
 		if (width <= 0 || height <= 0) {
@@ -25,7 +29,7 @@ class NodeCanvasFactory {
 	/**************************************************
 	 * Resets the canvas with the specified width and height.
 	 *
-	 * @param {Object<{canvas: Canvas, context: SKRSContext2D}>} canvasAndContext
+	 * @param {CanvasAndContext} canvasAndContext
 	 * @param {number} width
 	 * @param {number} height
 	 */
@@ -43,7 +47,7 @@ class NodeCanvasFactory {
 	/**************************************************
 	 * Destroys the canvas and context, allowing for garbage collection.
 	 *
-	 * @param {Object<{canvas: Canvas, context: SKRSContext2D}>} canvasAndContext
+	 * @param {CanvasAndContext} canvasAndContext
 	 */
 	destroy(canvasAndContext) {
 		if (!canvasAndContext.canvas) {

@@ -6,6 +6,7 @@
 	"exports": "./functions/ComparePdf.js",
 	"types": "./types/comparePDF.d.ts",
 	"scripts": {
+		"genTypes": "tsc",
 		"lint": "eslint . --fix",
 		"pretty": "npx prettier --write .",
 		"test": "mocha --recursive --timeout 20000",
@@ -29,6 +30,7 @@
 		"@eslint/js": "^9.39.2",
 		"@prettier/plugin-xml": "^3.4.2",
 		"@stylistic/eslint-plugin": "^5.8.0",
+		"@types/mocha": "^10.0.10",
 		"chai": "^6.2.2",
 		"chai-files": "^1.4.0",
 		"eslint": "^9.39.2",

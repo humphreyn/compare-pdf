@@ -1,11 +1,3 @@
-import * as fs from "node:fs";
-import path from "node:path";
-import utils from "./utils.js";
-import compareData from "./compareData.js";
-import compareImages from "./compareImages.js";
-import { CompareBy, Engine, LogLevel } from "./enums.js";
-// export * from "./enums.js";
-
 /**
  * @typedef {import("./typeDefs.js").CompareType} CompareType
  * @typedef {import("./typeDefs.js").Config} Config
@@ -20,7 +12,6 @@ import { CompareBy, Engine, LogLevel } from "./enums.js";
  * @typedef {import("./typeDefs.js").Settings} Settings
  * @typedef {import("./typeDefs.js").Verbosity} Verbosity
  */
-
 export default class ComparePdf {
 	/**************************************************
 	 * @constructor Constructor for ComparePdf class
@@ -48,73 +39,58 @@ export default class ComparePdf {
 	 */
 	constructor({
 		paths: {
-			actualPdfRootFolder = "./data/actualPdfs",
-			actualPngRootFolder = "./data/actualPngs",
-			baselinePdfRootFolder = "./data/baselinePdfs",
-			baselinePngRootFolder = "./data/baselinePngs",
-			diffPngRootFolder = "./data/diffPngs"
-		} = {},
+			actualPdfRootFolder,
+			actualPngRootFolder,
+			baselinePdfRootFolder,
+			baselinePngRootFolder,
+			diffPngRootFolder
+		},
 		settings: {
-			imageEngine = Engine.NATIVE,
-			density = 100,
-			quality = 70,
-			tolerance = 0,
-			threshold = 0.05,
-			cleanPngPaths = true,
-			matchPageCount = true,
-			disableFontFace = true,
-			verbosity = LogLevel.ERROR,
-			password = undefined
-		} = {}
-	} = {}) {
-		this.config = {
-			paths: {
-				actualPdfRootFolder: actualPdfRootFolder,
-				actualPngRootFolder: actualPngRootFolder,
-				baselinePdfRootFolder: baselinePdfRootFolder,
-				baselinePngRootFolder: baselinePngRootFolder,
-				diffPngRootFolder: diffPngRootFolder
-			},
-			settings: {
-				imageEngine: imageEngine,
-				density: density,
-				quality: quality,
-				tolerance: tolerance,
-				threshold: threshold,
-				cleanPngPaths: cleanPngPaths,
-				matchPageCount: matchPageCount,
-				disableFontFace: disableFontFace,
-				verbosity: verbosity,
-				password: password
-			}
+			imageEngine,
+			density,
+			quality,
+			tolerance,
+			threshold,
+			cleanPngPaths,
+			matchPageCount,
+			disableFontFace,
+			verbosity,
+			password
+		}
+	}?: Config);
+	config: {
+		paths: {
+			actualPdfRootFolder: any;
+			actualPngRootFolder: any;
+			baselinePdfRootFolder: any;
+			baselinePngRootFolder: any;
+			diffPngRootFolder: any;
 		};
-		utils.ensurePathsExist(this.config);
-
-		/**************************************************
-		 * ComparePdf Options
-		 *
-		 * @type {Opts}
-		 */
-		this.opts = {
-			masks: [],
-			crops: [],
-			onlyPageIndexes: [],
-			skipPageIndexes: []
+		settings: {
+			imageEngine: any;
+			density: any;
+			quality: any;
+			tolerance: any;
+			threshold: any;
+			cleanPngPaths: any;
+			matchPageCount: any;
+			disableFontFace: any;
+			verbosity: any;
+			password: any;
 		};
-
-		/**************************************************
-		 * ComparePdf Options
-		 *
-		 * @type {Results}
-		 */
-		this.result = {
-			status: "not executed",
-			message: undefined
-		};
-
-		return this;
-	}
-
+	};
+	/**************************************************
+	 * ComparePdf Options
+	 *
+	 * @type {Opts}
+	 */
+	opts: Opts;
+	/**************************************************
+	 * ComparePdf Options
+	 *
+	 * @type {Results}
+	 */
+	result: Results;
 	/**************************************************
 	 * Initialisation method
 	 * Should be chained first
@@ -122,125 +98,37 @@ export default class ComparePdf {
 	 * @memberOf ComparePdf
 	 * @return {ComparePdf}
 	 */
-	init() {
-		this.opts = {
-			masks: [],
-			crops: [],
-			onlyPageIndexes: [],
-			skipPageIndexes: []
-		};
-
-		this.result = {
-			status: "not executed",
-			message: undefined
-		};
-		return this;
-	}
-
+	init(): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {Buffer} baselinePdfBuffer
 	 * @param {string} [baselinePdfFilename=undefined]
 	 * @return {ComparePdf}
 	 */
-	baselinePdfBuffer(baselinePdfBuffer, baselinePdfFilename = undefined) {
-		if (Buffer.isBuffer(baselinePdfBuffer)) {
-			this.baselinePdfBufferData = baselinePdfBuffer;
-			if (baselinePdfFilename) {
-				this.baselinePdf = baselinePdfFilename;
-			}
-		} else {
-			this.result = {
-				status: "failed",
-				message: "Baseline pdf buffer is not a buffer. Please define correctly then try again."
-			};
-		}
-		return this;
-	}
-
+	baselinePdfBuffer(baselinePdfBuffer: Buffer, baselinePdfFilename?: string): ComparePdf;
+	baselinePdfBufferData: Buffer<ArrayBufferLike>;
+	baselinePdf: any;
 	/****************************************************
 	 *
 	 * @param {string} baselinePdf
 	 * @return {ComparePdf}
 	 */
-	baselinePdfFile(baselinePdf) {
-		if (typeof baselinePdf !== "undefined" && baselinePdf !== "") {
-			if (fs.existsSync(baselinePdf)) {
-				this.baselinePdf = baselinePdf;
-			} else {
-				const baselineFileName = path.parse(baselinePdf).name;
-				const baselineFile = path.resolve(this.config.paths.baselinePdfRootFolder, `${baselineFileName}.pdf`);
-
-				if (fs.existsSync(baselineFile)) {
-					this.baselinePdf = baselineFile;
-				} else {
-					this.result = {
-						status: "failed",
-						message: `Baseline pdf file: '${baselinePdf}' does not exist. Please define correctly then try again.`
-					};
-				}
-			}
-		} else {
-			this.result = {
-				status: "failed",
-				message: "Baseline pdf is file was not set. Please define correctly then try again."
-			};
-		}
-		return this;
-	}
-
+	baselinePdfFile(baselinePdf: string): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {Buffer} actualPdfBuffer
 	 * @param {string} [actualPdfFilename=undefined]
 	 * @return {ComparePdf}
 	 */
-	actualPdfBuffer(actualPdfBuffer, actualPdfFilename = undefined) {
-		if (Buffer.isBuffer(actualPdfBuffer)) {
-			this.actualPdfBufferData = actualPdfBuffer;
-			if (actualPdfFilename) {
-				this.actualPdf = actualPdfFilename;
-			}
-		} else {
-			this.result = {
-				status: "failed",
-				message: "Actual pdf buffer is not a buffer. Please define correctly then try again."
-			};
-		}
-		return this;
-	}
-
+	actualPdfBuffer(actualPdfBuffer: Buffer, actualPdfFilename?: string): ComparePdf;
+	actualPdfBufferData: Buffer<ArrayBufferLike>;
+	actualPdf: any;
 	/****************************************************
 	 *
 	 * @param {string} actualPdf
 	 * @return {ComparePdf}
 	 */
-	actualPdfFile(actualPdf) {
-		if (typeof actualPdf !== "undefined" && actualPdf !== "") {
-			if (fs.existsSync(actualPdf)) {
-				this.actualPdf = actualPdf;
-			} else {
-				const actualFileName = path.parse(actualPdf).name;
-				const actualFile = path.resolve(this.config.paths.actualPdfRootFolder, `${actualFileName}.pdf`);
-
-				if (fs.existsSync(actualFile)) {
-					this.actualPdf = actualFile;
-				} else {
-					this.result = {
-						status: "failed",
-						message: `Actual pdf file: '${actualPdf}' does not exist. Please define correctly then try again.`
-					};
-				}
-			}
-		} else {
-			this.result = {
-				status: "failed",
-				message: "Actual pdf file was not set. Please define correctly then try again."
-			};
-		}
-		return this;
-	}
-
+	actualPdfFile(actualPdf: string): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageMask} mask
@@ -249,45 +137,25 @@ export default class ComparePdf {
 	 * @param {string} [mask.color="black"]
 	 * @return {ComparePdf}
 	 */
-	addMask({ pageIndex, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black" }) {
-		this.opts.masks.push({
-			pageIndex: pageIndex,
-			coordinates: coordinates,
-			color: color
-		});
-		return this;
-	}
-
+	addMask({ pageIndex, coordinates, color }: PageMask): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageMask[]} masks
 	 * @return {ComparePdf}
 	 */
-	addMasks(masks) {
-		this.opts.masks = [...this.opts.masks, ...masks];
-		return this;
-	}
-
+	addMasks(masks: PageMask[]): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {Array<number>} pageIndexes
 	 * @return {ComparePdf}
 	 */
-	onlyPageIndexes(pageIndexes) {
-		this.opts.onlyPageIndexes = [...this.opts.onlyPageIndexes, ...pageIndexes];
-		return this;
-	}
-
+	onlyPageIndexes(pageIndexes: Array<number>): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {Array<number>} pageIndexes
 	 * @return {ComparePdf}
 	 */
-	skipPageIndexes(pageIndexes) {
-		this.opts.skipPageIndexes = [...this.opts.skipPageIndexes, ...pageIndexes];
-		return this;
-	}
-
+	skipPageIndexes(pageIndexes: Array<number>): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageCrop} pageCrop
@@ -295,55 +163,29 @@ export default class ComparePdf {
 	 * @param {Dimension} [pageCrop.dimension={ width: 0, height: 0, x: 0, y: 0 }]
 	 * @return {ComparePdf}
 	 */
-	cropPage({ pageIndex, dimension = { width: 0, height: 0, x: 0, y: 0 } }) {
-		this.opts.crops.push({
-			pageIndex: pageIndex,
-			dimension: dimension
-		});
-		return this;
-	}
-
+	cropPage({ pageIndex, dimension }: PageCrop): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageCrop[]} cropPagesList
 	 * @return {ComparePdf}
 	 */
-	cropPages(cropPagesList) {
-		this.opts.crops = [...this.opts.crops, ...cropPagesList];
-		return this;
-	}
-
+	cropPages(cropPagesList: PageCrop[]): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {CompareType} [comparisonType=CompareBy.IMAGE]
 	 * @return {Promise<Results>}
 	 */
-	async compare(comparisonType = CompareBy.IMAGE) {
-		if (this.result.status === "not executed" || this.result.status !== "failed") {
-			const [actualPdfBuffer, baselinePdfBuffer] = await Promise.all([
-				this.actualPdfBufferData ? Promise.resolve(this.actualPdfBufferData) : fs.promises.readFile(this.actualPdf),
-				this.baselinePdfBufferData
-					? Promise.resolve(this.baselinePdfBufferData)
-					: fs.promises.readFile(this.baselinePdf)
-			]);
-			const compareDetails = {
-				actualPdfFilename: this.actualPdf,
-				baselinePdfFilename: this.baselinePdf,
-				actualPdfBuffer: actualPdfBuffer, // , { encoding: "base64" }
-				baselinePdfBuffer: baselinePdfBuffer,
-				config: this.config,
-				opts: this.opts
-			};
-			switch (comparisonType) {
-				case CompareBy.BASE64:
-					this.result = await compareData.comparePdfByBase64(compareDetails);
-					break;
-				case CompareBy.IMAGE:
-				default:
-					this.result = await compareImages.comparePdfByImage(compareDetails);
-					break;
-			}
-		}
-		return this.result;
-	}
+	compare(comparisonType?: CompareType): Promise<Results>;
 }
+export type CompareType = any;
+export type Config = any;
+export type Coordinates = any;
+export type Dimension = any;
+export type EngineType = any;
+export type Opts = any;
+export type PageCrop = any;
+export type PageMask = any;
+export type Paths = any;
+export type Results = any;
+export type Settings = any;
+export type Verbosity = any;

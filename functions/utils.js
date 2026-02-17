@@ -1,6 +1,10 @@
 import * as fs from "node:fs";
 import path from "node:path";
 
+/**
+ * @typedef {import("./typeDefs.js").Config} Config
+ */
+
 /**************************************************
  * Ensures that a directory is empty. Deletes directory contents
  * if the directory is not empty. If the directory does not exist,
@@ -25,15 +29,15 @@ function emptyDirSync(dir) {
 	return undefined;
 }
 
-/**************************************************
- * Clones/copies a JSON Object
- *
- * @param {Object} obj    - JSON object to clone
- * @returns {Object}
- */
-const copyJsonObject = (obj) => {
-	return structuredClone(obj);
-};
+// /**************************************************
+//  * Clones/copies a JSON Object
+//  *
+//  * @param {Object} obj    - JSON object to clone
+//  * @returns {Object}
+//  */
+// const copyJsonObject = (obj) => {
+// 	return structuredClone(obj);
+// };
 
 /**************************************************
  * Ensures that a directory is empty. Deletes directory contents
@@ -43,25 +47,24 @@ const copyJsonObject = (obj) => {
  * @param {string} filepath        - directory to ensure and clean
  * @returns {undefined}
  */
-const ensureAndCleanupPath = (filepath) => {
+function ensureAndCleanupPath(filepath) {
 	return emptyDirSync(filepath);
-};
+}
 
 /**************************************************
  * Ensures actualPdfRootFolder and baselinePdfRootFolder
  * exists
  *
- * @param {ComparePDF.Config} config        - directory to ensure and clean
+ * @param {Config} config        - directory to ensure and clean
  * @returns {undefined}
  */
-const ensurePathsExist = (config) => {
+function ensurePathsExist(config) {
 	fs.mkdirSync(config.paths.actualPdfRootFolder, { "recursive": true, "mode": 0o777 });
 	fs.mkdirSync(config.paths.baselinePdfRootFolder, { "recursive": true, "mode": 0o777 });
 	return undefined;
-};
+}
 
 export default {
-	copyJsonObject,
 	ensureAndCleanupPath,
 	ensurePathsExist
 };
