@@ -4,7 +4,6 @@ import utils from "./utils.js";
 import compareData from "./compareData.js";
 import compareImages from "./compareImages.js";
 import { CompareBy, Engine, LogLevel } from "./enums.js";
-// export * from "./enums.js";
 
 /**
  * @typedef {import("./typeDefs.js").CompareType} CompareType
@@ -347,3 +346,5 @@ export default class ComparePdf {
 		return this.result;
 	}
 }
+
+export { CompareBy, Engine, LogLevel };

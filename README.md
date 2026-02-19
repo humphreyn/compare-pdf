@@ -37,7 +37,7 @@ Below is the default configuration showing the paths where the PDFs should be pl
 The config also contains settings for image comparison such as density, quality, tolerance and threshold. It also has flag to enable or disable cleaning up of the actual and baseline png folders.
 
 ```javascript
-import { ImageEngine, LogLevel } from "compare-pdf";
+import { Engine, LogLevel } from "compare-pdf";
 
 export default {
 	"paths": {
@@ -48,7 +48,7 @@ export default {
 		"diffPngRootFolder": "./data/diffPngs"
 	},
 	"settings": {
-		"imageEngine": ImageEngine.GRAPHICS_MAGICK,
+		"imageEngine": Engine.GRAPHICS_MAGICK,
 		"density": 100,
 		"quality": 70,
 		"tolerance": 0,
@@ -66,7 +66,7 @@ export default {
 
 **PDF to Image Conversion**
 
-- **imageEngine**: This config allows you to specify which image engine to use, set by ImageEngine enum [ImageEngine.NATIVE | ImageEngine.GRAPHICS_MAGICK | ImageEngine.IMAGE_MAGICK ] default is ImageEngine.NATIVE
+- **imageEngine**: This config allows you to specify which image engine to use, set by Engine enum [Engine.NATIVE | Engine.GRAPHICS_MAGICK | Engine.IMAGE_MAGICK ] default is Engine.NATIVE
 - **density**: (from gm) This option specifies the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image.
 - **quality**: (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best).
 - **cleanPngPaths**: This is a boolean flag for cleaning png folders automatically
@@ -479,12 +479,12 @@ and the logging/verbosity level from default ERROR level:
 | LogLevel.ERROR          | 0     |
 
 ```javascript
-import ComparePdf, { ImageEngine, LogLevel } from "compare-pdf";
+import ComparePdf, { Engine, LogLevel } from "compare-pdf";
 import { it } from "mocha";
 import * as chai from "chai";
 
 it("Should be able to verify same PDFs using relative paths", async () => {
-	const comparePdf = new ComparePdf({ settings: {	imageEngine: ImageEngine.GRAPHICS_MAGICK, verbosity: LogLevel.WARNING }});
+	const comparePdf = new ComparePdf({ settings: {	imageEngine: Engine.GRAPHICS_MAGICK, verbosity: LogLevel.WARNING }});
 
 	const results = await comparePdf
 		.init()

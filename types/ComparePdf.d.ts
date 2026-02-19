@@ -189,3 +189,7 @@ export type Paths = any;
 export type Results = any;
 export type Settings = any;
 export type Verbosity = any;
+import { CompareBy } from "./enums.js";
+import { Engine } from "./enums.js";
+import { LogLevel } from "./enums.js";
+export { CompareBy, Engine, LogLevel };
