@@ -1,6 +1,5 @@
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";
-import json from "eslint-plugin-json";
 import markdown from "eslint-plugin-markdown";
 import pluginJs from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
@@ -40,10 +39,6 @@ const config = [
 		rules: {
 			"comma-dangle": ["error", "never"]
 		}
-	},
-	{
-		files: ["**/*.json"],
-		...json.configs["recommended"]
 	},
 	{
 		// "files": ["**/*.js", "**/*.cjs", "**/*.mjs"],
