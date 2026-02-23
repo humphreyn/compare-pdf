@@ -1,9 +1,14 @@
 import path from "node:path";
 
+/**
+ * @typedef {import("./typeDefs.js").CompareDetails} CompareDetails
+ * @typedef {import("./typeDefs.js").Results} Results
+ */
+
 /**************************************************
  *
- * @param {ComparePDF.CompareDetails} compareDetails
- * @return {Promise<ComparePDF.Results>}
+ * @param {CompareDetails} compareDetails
+ * @return {Promise<Results>}
  */
 const comparePdfByBase64 = async (compareDetails) => {
 	const actualPdfFilename = compareDetails.actualPdfFilename;

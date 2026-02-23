@@ -5,12 +5,18 @@ import pixelmatch from "pixelmatch";
 import utils from "./utils.js";
 import getEngine from "./getEngine.js";
 
+/**
+ * @typedef {import("./typeDefs.js").Config} Config
+ * @typedef {import("./typeDefs.js").Results} Results
+ * @typedef {import("./typeDefs.js").CompareImageDetails} CompareImageDetails
+ */
+
 /****************************************************
  *
  * @param {string} actual
  * @param {string} baseline
  * @param {string} diff
- * @param {ComparePDF.Config} config
+ * @param {Config} config
  * @return {Promise<unknown>}
  */
 const comparePngs = (actual, baseline, diff, config) => {
@@ -39,8 +45,8 @@ const comparePngs = (actual, baseline, diff, config) => {
 
 /**************************************************
  *
- * @param {ComparePDF.CompareImageDetails} compareDetails
- * @return {Promise<ComparePDF.Results>}
+ * @param {CompareImageDetails} compareDetails
+ * @return {Promise<Results>}
  */
 const comparePdfByImage = async (compareDetails) => {
 	try {
@@ -136,8 +142,8 @@ const comparePdfByImage = async (compareDetails) => {
 					const pageCroppings = opts.crops.filter((crop) => crop.pageIndex === index);
 					if (pageCroppings && pageCroppings.length > 0) {
 						for (let cropIndex = 0; cropIndex < pageCroppings.length; cropIndex++) {
-							await imageEngine.applyCrop(actualPng, pageCroppings[cropIndex].coordinates, cropIndex);
-							await imageEngine.applyCrop(baselinePng, pageCroppings[cropIndex].coordinates, cropIndex);
+							await imageEngine.applyCrop(actualPng, pageCroppings[cropIndex].dimension, cropIndex);
+							await imageEngine.applyCrop(baselinePng, pageCroppings[cropIndex].dimension, cropIndex);
 							comparisonResults.push(
 								await comparePngs(
 									actualPng.replace(".png", `-${cropIndex}.png`),

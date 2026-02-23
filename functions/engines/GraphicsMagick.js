@@ -3,17 +3,33 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import gm from "gm";
 import { Engine } from "../enums.js";
 
+/**
+ * @typedef {import("../typeDefs.js").Config} Config
+ * @typedef {import("../typeDefs.js").Coordinates} Coordinates
+ * @typedef {import("../typeDefs.js").Dimension} Dimension
+ * @typedef {import("../typeDefs.js").GraphicMagickEngineType} GraphicMagickEngineType
+ * @typedef {import("../typeDefs.js").PdfDetail} PdfDetail
+ */
+
 class GraphicsMagick {
 	/**************************************************
 	 * Constructor for GraphicsMagick class
 	 *
-	 * @param {(Engine.GRAPHICS_MAGICK|Engine.IMAGE_MAGICK)} [engine=Engine.GRAPHICS_MAGICK]  - optional engine, Default is Engine.GRAPHICS_MAGICK
+	 * @param {GraphicMagickEngineType} [engine=Engine.GRAPHICS_MAGICK]  - optional engine, Default is Engine.GRAPHICS_MAGICK
 	 * @returns {GraphicsMagick}
 	 */
 	constructor(engine = Engine.GRAPHICS_MAGICK) {
 		this.gm = engine === Engine.GRAPHICS_MAGICK ? gm.subClass({ imageMagick: "7+" }) : gm;
 	}
 
+	/**************************************************
+	 * Convert PDF to PNG image
+	 *
+	 * @param {PdfDetail} pdfDetails
+	 * @param {string} pngFilePath
+	 * @param {Config} config
+	 * @return {Promise<void>}
+	 */
 	pdfToPng(pdfDetails, pngFilePath, config) {
 		const options = pdfDetails.buffer ? { data: new Uint8Array(pdfDetails.buffer) } : { url: pdfDetails.filename };
 		if (Object.prototype.hasOwnProperty.call(config.settings, "password")) options.password = config.settings.password;
@@ -77,15 +93,15 @@ class GraphicsMagick {
 	 * Function to apply crop
 	 *
 	 * @param {string} pngFilePath
-	 * @param {Dimension} coordinates
+	 * @param {Dimension} dimension
 	 * @param {number} index
 	 * @return {Promise<unknown>}
 	 */
-	applyCrop(pngFilePath, coordinates = { width: 0, height: 0, x: 0, y: 0 }, index = 0) {
+	applyCrop(pngFilePath, dimension = { width: 0, height: 0, x: 0, y: 0 }, index = 0) {
 		return new Promise((resolve, reject) => {
 			this.gm(pngFilePath)
 				.command("convert")
-				.crop(coordinates.width, coordinates.height, coordinates.x, coordinates.y)
+				.crop(dimension.width, dimension.height, dimension.x, dimension.y)
 				.write(pngFilePath.replace(".png", `-${index}.png`), (err) => {
 					err ? reject(err) : resolve();
 				});

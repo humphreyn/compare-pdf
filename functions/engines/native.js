@@ -7,6 +7,13 @@ const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
 const STANDARD_FONT_DATA_URL = "../../node_modules/pdfjs-dist/standard_fonts/";
 
+/**
+ * @typedef {import("../typeDefs.js").Config} Config
+ * @typedef {import("../typeDefs.js").Coordinates} Coordinates
+ * @typedef {import("../typeDefs.js").Dimension} Dimension
+ * @typedef {import("../typeDefs.js").PdfDetail} PdfDetail
+ */
+
 /**************************************************
  * Convert PDF page to PNG image
  *
@@ -38,9 +45,9 @@ const pdfPageToPng = async (pdfDocument, pageNumber, filename, isSinglePage = fa
 /**************************************************
  * Convert PDF to PNG image
  *
- * @param {Buffer|string} pdfDetails
+ * @param {PdfDetail} pdfDetails
  * @param {string} pngFilePath
- * @param {ComparePDF.Config} config
+ * @param {Config} config
  * @return {Promise<void>}
  */
 const pdfToPng = async (pdfDetails, pngFilePath, config) => {
@@ -61,7 +68,7 @@ const pdfToPng = async (pdfDetails, pngFilePath, config) => {
 		options.url = pdfDetails.filename;
 	}
 	if (Object.prototype.hasOwnProperty.call(config.settings, "password")) options.password = config.settings.password;
-	const loadingTask = await pdfjsLib.getDocument(options);
+	const loadingTask = pdfjsLib.getDocument(options);
 	const pdfDocument = await loadingTask.promise;
 
 	for (let index = 1; index <= pdfDocument.numPages; index++) {
@@ -73,7 +80,7 @@ const pdfToPng = async (pdfDetails, pngFilePath, config) => {
  * Apply mask to PNG image
  *
  * @param {string} pngFilePath
- * @param {ComparePDF.Coordinates} coordinates
+ * @param {Coordinates} coordinates
  * @param {string} [color="black"]
  * @return {Promise<boolean>}
  */
@@ -90,9 +97,9 @@ const applyMask = (pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, co
 			ctx.fillStyle = color;
 			ctx.fillRect(coordinates.x0, coordinates.y0, coordinates.x1 - coordinates.x0, coordinates.y1 - coordinates.y0);
 			fs.writeFileSync(pngFilePath, canvas.toBuffer("image/png"));
-			resolve(true);
+			return resolve(true);
 		} catch (error) {
-			reject(error);
+			return reject(error);
 		}
 	});
 };
@@ -101,7 +108,7 @@ const applyMask = (pngFilePath, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, co
  * Apply crop to PNG image
  *
  * @param {string} pngFilePath
- * @param {ComparePDF.Dimension} coordinates
+ * @param {Dimension} coordinates
  * @param {number} [index=0]
  * @return {Promise<unknown>}
  */
