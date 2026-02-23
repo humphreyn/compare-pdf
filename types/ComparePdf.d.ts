@@ -133,7 +133,7 @@ export default class ComparePdf {
 	 *
 	 * @param {PageMask} mask
 	 * @param {number} mask.pageIndex          - page index for the mask to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {Coordinates} [mask.coordinates={ x0: 0, y0: 0, x1: 0, y1: 0 }]
+	 * @param {Coordinates} mask.coordinates
 	 * @param {string} [mask.color="black"]
 	 * @return {ComparePdf}
 	 */
@@ -146,24 +146,22 @@ export default class ComparePdf {
 	addMasks(masks: PageMask[]): ComparePdf;
 	/****************************************************
 	 *
-	 * @param {Array<number>} pageIndexes
+	 * @param {number[]} [pageIndexes=[]]
 	 * @return {ComparePdf}
 	 */
-	onlyPageIndexes(pageIndexes: Array<number>): ComparePdf;
+	onlyPageIndexes(pageIndexes?: number[]): ComparePdf;
 	/****************************************************
 	 *
-	 * @param {Array<number>} pageIndexes
+	 * @param {number[]} [pageIndexes=[]]
 	 * @return {ComparePdf}
 	 */
-	skipPageIndexes(pageIndexes: Array<number>): ComparePdf;
+	skipPageIndexes(pageIndexes?: number[]): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageCrop} pageCrop
-	 * @param {number} pageCrop.pageIndex            - page index for the crop to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {Dimension} [pageCrop.dimension={ width: 0, height: 0, x: 0, y: 0 }]
 	 * @return {ComparePdf}
 	 */
-	cropPage({ pageIndex, dimension }: PageCrop): ComparePdf;
+	cropPage(pageCrop: PageCrop): ComparePdf;
 	/****************************************************
 	 *
 	 * @param {PageCrop[]} cropPagesList
