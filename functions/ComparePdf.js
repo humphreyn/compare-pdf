@@ -244,11 +244,11 @@ export default class ComparePdf {
 	 *
 	 * @param {PageMask} mask
 	 * @param {number} mask.pageIndex          - page index for the mask to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {Coordinates} [mask.coordinates={ x0: 0, y0: 0, x1: 0, y1: 0 }]
+	 * @param {Coordinates} mask.coordinates
 	 * @param {string} [mask.color="black"]
 	 * @return {ComparePdf}
 	 */
-	addMask({ pageIndex, coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 }, color = "black" }) {
+	addMask({ pageIndex, coordinates, color = "black" }) {
 		this.opts.masks.push({
 			pageIndex: pageIndex,
 			coordinates: coordinates,
@@ -263,26 +263,28 @@ export default class ComparePdf {
 	 * @return {ComparePdf}
 	 */
 	addMasks(masks) {
-		this.opts.masks = [...this.opts.masks, ...masks];
+		masks.forEach((mask) => {
+			this.addMask(mask);
+		});
 		return this;
 	}
 
 	/****************************************************
 	 *
-	 * @param {Array<number>} pageIndexes
+	 * @param {number[]} [pageIndexes=[]]
 	 * @return {ComparePdf}
 	 */
-	onlyPageIndexes(pageIndexes) {
+	onlyPageIndexes(pageIndexes = []) {
 		this.opts.onlyPageIndexes = [...this.opts.onlyPageIndexes, ...pageIndexes];
 		return this;
 	}
 
 	/****************************************************
 	 *
-	 * @param {Array<number>} pageIndexes
+	 * @param {number[]} [pageIndexes=[]]
 	 * @return {ComparePdf}
 	 */
-	skipPageIndexes(pageIndexes) {
+	skipPageIndexes(pageIndexes = []) {
 		this.opts.skipPageIndexes = [...this.opts.skipPageIndexes, ...pageIndexes];
 		return this;
 	}
@@ -290,15 +292,10 @@ export default class ComparePdf {
 	/****************************************************
 	 *
 	 * @param {PageCrop} pageCrop
-	 * @param {number} pageCrop.pageIndex            - page index for the crop to be applied on, starting from 0 i.e. 0 for the first page, 1 for the second page, and so on.
-	 * @param {Dimension} [pageCrop.dimension={ width: 0, height: 0, x: 0, y: 0 }]
 	 * @return {ComparePdf}
 	 */
-	cropPage({ pageIndex, dimension = { width: 0, height: 0, x: 0, y: 0 } }) {
-		this.opts.crops.push({
-			pageIndex: pageIndex,
-			dimension: dimension
-		});
+	cropPage(pageCrop) {
+		this.opts.crops.push(pageCrop);
 		return this;
 	}
 
