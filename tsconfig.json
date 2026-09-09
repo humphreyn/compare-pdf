@@ -4,6 +4,9 @@
 		"allowJs": true,
 		"declaration": true,
 		"emitDeclarationOnly": true,
+		"lib": ["esnext", "dom", "dom.iterable"],
+		"rootDir": "functions",
+		"types": ["node"],
 		"outDir": "types",
 		"declarationMap": false
 	}

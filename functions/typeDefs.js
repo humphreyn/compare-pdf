@@ -55,8 +55,8 @@
  * @typedef Settings
  * @type {Object}
  * @property {EngineType} [imageEngine=Engine.NATIVE] - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
- * @property {number} [density=100]                   - optional, (from gm) the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image. Default 100
- * @property {number} [quality=70]                    - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best). Default 70
+ * @property {number} [density=100]                   - optional, resolution used by the GraphicsMagick/ImageMagick CLI engines while rendering vector formats into an image. Default 100
+ * @property {number} [quality=70]                    - optional, compression level used by the GraphicsMagick/ImageMagick CLI engines. val ranges from 0 to 100 (best). Default 70
  * @property {number} [tolerance=0]                   - optional, the allowable pixel count that is different between the compared images. Default 0
  * @property {number} [threshold=0.05]                - optional, (from pixelmatch) ranges from 0 to 1. Smaller values make the comparison more sensitive. Default 0.05
  * @property {boolean} [cleanPngPaths=true]           - optional, boolean flag for cleaning png folders automatically. Default true

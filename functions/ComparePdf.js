@@ -33,8 +33,8 @@ export default class ComparePdf {
 	 * @param {string} [config.paths.diffPngRootFolder="./data/diffPngs"]                 - optional, root folder of Difference png/images. Default "./data/diffPngs"
 	 * @param {Settings} [config.settings={}]                                             - optional, settings object with the following options:
 	 * @param {EngineType} [config.settings.imageEngine=Engine.NATIVE]                    - optional, the image Engine to use: [ "imageMagick" | "graphicsMagick" | "native" ], Default "native"
-	 * @param {number} [config.settings.density=100]                                      - optional, (from gm) the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image. Default 100
-	 * @param {number} [config.settings.quality=70]                                       - optional, (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best). Default 70
+	 * @param {number} [config.settings.density=100]                                      - optional, resolution used by the GraphicsMagick/ImageMagick CLI engines while rendering vector formats into an image. Default 100
+	 * @param {number} [config.settings.quality=70]                                       - optional, compression level used by the GraphicsMagick/ImageMagick CLI engines. val ranges from 0 to 100 (best). Default 70
 	 * @param {number} [config.settings.tolerance=0]                                      - optional, the allowable pixel count that is different between the compared images. Default 0
 	 * @param {number} [config.settings.threshold=0.05]                                   - optional, (from pixelmatch) ranges from 0 to 1. Smaller values make the comparison more sensitive. Default 0.05
 	 * @param {boolean} [config.settings.cleanPngPaths=true]                              - optional, boolean flag for cleaning png folders automatically. Default true

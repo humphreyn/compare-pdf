@@ -43,7 +43,7 @@ chai.use(chaiFiles);
 function getNoOfPages({ url, password = undefined } = {}) {
 	return readFile(url)
 		.then((file) => {
-			return new Uint8Array(file.buffer);
+			return new Uint8Array(file.buffer, file.byteOffset, file.byteLength);
 		})
 		.then((content) => {
 			return pdfjsLib.getDocument({ "password": password, "data": content });
