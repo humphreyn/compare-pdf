@@ -6,13 +6,13 @@ Standalone node module that compares pdfs
 
 From version 2.0.0 this package is now pure ESM. It cannot be require()'d from CommonJS.
 
-You also need to make sure you're on the latest minor version of Node.js. At minimum Node.js 16.
+You also need to make sure you're on a supported Node.js release. At minimum Node.js 24.20.0.
 
 I would strongly recommend moving to ESM. ESM can still import CommonJS packages, but CommonJS packages cannot import ESM packages synchronously.
 
 ## Setup
 
-To use GraphicsMagick (gm) Engine, install the following system dependencies
+To use the GraphicsMagick/ImageMagick engine options, install the following system dependencies
 
 - [GraphicsMagick](http://www.graphicsmagick.org/README.html)
 - [ImageMagick >=7](https://imagemagick.org/script/download.php)
@@ -29,6 +29,8 @@ Install npm module
 ```sh
 npm install compare-pdf
 ```
+
+The package invokes the `gm` or `magick` binaries directly, so those tools still need to be available on the system PATH.
 
 ## Default Configuration
 
@@ -67,8 +69,8 @@ export default {
 **PDF to Image Conversion**
 
 - **imageEngine**: This config allows you to specify which image engine to use, set by Engine enum [Engine.NATIVE | Engine.GRAPHICS_MAGICK | Engine.IMAGE_MAGICK ] default is Engine.NATIVE
-- **density**: (from gm) This option specifies the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image.
-- **quality**: (from gm) Adjusts the jpeg|miff|png|tiff compression level. val ranges from 0 to 100 (best).
+- **density**: This option specifies the image resolution to store while encoding a raster image or the canvas resolution while rendering (reading) vector formats into an image for the GraphicsMagick/ImageMagick CLI engines.
+- **quality**: Adjusts the jpeg|miff|png|tiff compression level used by the GraphicsMagick/ImageMagick CLI engines. val ranges from 0 to 100 (best).
 - **cleanPngPaths**: This is a boolean flag for cleaning png folders automatically
 - **matchPageCount**: This is a boolean flag that enables or disables the page count verification between the actual and baseline PDFs
 - **disableFontFace**: By default fonts are converted to OpenType fonts and loaded via the Font Loading API or `@font-face` rules. If disabled, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands.

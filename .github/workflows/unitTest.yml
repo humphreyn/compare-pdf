@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.20.0, 24.x]
+        node-version: [24.20.0, 26.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -44,7 +44,7 @@ jobs:
           sudo apt install -qq build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev make gcc wget curl xz-utils
           sudo apt-get -qq install --yes ghostscript graphicsmagick
           sudo apt install -qq libx11-dev libxext-dev zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev
-          sudo wget https://imagemagick.org/archive/releases/${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
+          sudo wget https://download.imagemagick.org/archive/releases/${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
           sudo tar xf ${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
           sudo rm ${{vars.IMAGE_MAGIC_VERSION}}.tar.xz
           sudo sh ./${{vars.IMAGE_MAGIC_VERSION}}/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes
@@ -54,7 +54,7 @@ jobs:
 
       - name: Check dependencies
         run: |
-          convert -version
+          magick -version
           gm -version
           gs -h
 

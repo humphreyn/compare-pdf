@@ -1,6 +1,6 @@
 {
 	"name": "compare-pdf",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"description": "Standalone node module that compares PDF's",
 	"type": "module",
 	"exports": "./functions/ComparePdf.js",
@@ -18,37 +18,38 @@
 		"url": "git+https://github.com/marcdacz/compare-pdf.git"
 	},
 	"engines": {
-		"node": ">=22.20.0"
+		"node": ">=24.20.0"
 	},
 	"homepage": "https://github.com/marcdacz/compare-pdf#readme",
 	"keywords": ["pdf", "graphicsMagick", "imageMagick", "compare pdf", "test pdf"],
 	"devDependencies": {
-		"@commitlint/cli": "^20.5.0",
-		"@commitlint/config-conventional": "^20.5.0",
-		"@commitlint/format": "^20.5.0",
+		"@commitlint/cli": "^21.2.2",
+		"@commitlint/config-conventional": "^21.2.2",
+		"@commitlint/format": "^21.2.2",
 		"@eslint/js": "^10.0.1",
 		"@prettier/plugin-xml": "^3.4.2",
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@types/mocha": "^10.0.10",
+		"@types/node": "^26.5.0",
 		"chai": "^6.2.2",
 		"chai-files": "^1.4.0",
-		"eslint": "^10.2.1",
+		"eslint": "^10.10.0",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-markdown": "^5.1.0",
-		"eslint-plugin-prettier": "^5.5.5",
-		"globals": "^17.5.0",
+		"@eslint/markdown": "^8.0.3",
+		"eslint-plugin-prettier": "^5.5.6",
+		"globals": "^17.12.0",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.4.0",
-		"mocha": "12.0.0-beta-10",
-		"prettier": "^3.8.3",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.58.2"
+		"lint-staged": "^17.5.0",
+		"mocha": "12.0.0",
+		"prettier": "^3.9.6",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.70.0"
 	},
 	"dependencies": {
-		"@napi-rs/canvas": "^0.1.99",
-		"gm": "^1.25.1",
-		"pdfjs-dist": "^5.6.205",
-		"pixelmatch": "^7.1.0",
+		"@napi-rs/canvas": "^1.0.8",
+		"cross-spawn": "^7.0.6",
+		"pdfjs-dist": "6.3.289",
+		"pixelmatch": "^7.2.0",
 		"pngjs": "^7.0.0"
 	},
 	"lint-staged": {

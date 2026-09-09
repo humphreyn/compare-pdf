@@ -63,7 +63,7 @@ const pdfToPng = async (pdfDetails, pngFilePath, config) => {
 		// useWorkerFetch: false
 	};
 	if (pdfDetails.buffer) {
-		options.data = new Uint8Array(pdfDetails.buffer);
+		options.data = new Uint8Array(pdfDetails.buffer.buffer, pdfDetails.buffer.byteOffset, pdfDetails.buffer.byteLength);
 	} else {
 		options.url = pdfDetails.filename;
 	}
