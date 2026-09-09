@@ -1,13 +1,13 @@
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";
-import markdown from "eslint-plugin-markdown";
+import markdown from "@eslint/markdown";
 import pluginJs from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 
-const config = [
+export default defineConfig([
 	{
-		// ignores added here
 		ignores: [
 			"**/.editorconfig",
 			"**/.eslintcache",
@@ -83,7 +83,6 @@ const config = [
 	},
 	...markdown.configs.recommended,
 	pluginJs.configs.recommended,
-	eslintPluginPrettierRecommended
-];
-
-export default config;
+	eslintPluginPrettierRecommended,
+	...markdown.configs.processor
+]);
